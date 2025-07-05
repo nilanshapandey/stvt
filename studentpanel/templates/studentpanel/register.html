@@ -1,0 +1,54 @@
+{% extends "studentpanel/base.html" %}
+{% load static %}
+{% block title %}Student Registration{% endblock %}
+
+{% block page %}
+<div class="content-wrapper" style="margin-left:0">
+  <section class="content pt-5">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-7">
+
+          <!-- card -->
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title mb-0">Student Registration</h3>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="card-body">
+                {{ form.non_field_errors }}
+
+                {% for field in form %}
+                  <div class="form-group">
+                    {{ field.label_tag }}
+
+                    <!-- ---------- input ---------- -->
+                    {{ field }}
+
+                    {% if field.help_text %}
+                      <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    <small class="text-danger">{{ field.errors|striptags }}</small>
+                  </div>
+                {% endfor %}
+              </div>
+
+              <div class="card-footer text-right">
+                <button type="submit" class="btn btn-primary">Register</button>
+              </div>
+            </form>
+          </div>
+
+          <p class="text-center mt-2">
+            Already registered?
+            <a href="{% url 'studentpanel:login' %}">Login here</a>
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
