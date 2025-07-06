@@ -1,17 +1,14 @@
+# studentpanel/urls.py
 from django.urls import path
 from . import views
 
 app_name = "studentpanel"
 
 urlpatterns = [
-    # --- Root now shows the registration form ---
-    path("",                   views.register,    name="register"),
-
-    # Authentication
-    path("login/",             views.login_view,  name="login"),
-    path("logout/",            views.logout_view, name="logout"),
-    path("accounts/login/",    views.login_view),          # alias for Django redirects
-
-    # Dashboard lives here
-    path("dashboard/",         views.dashboard,   name="dashboard"),
+    path("",          views.dashboard,  name="dashboard"),   # default home
+    path("register/", views.register,   name="register"),
+    path("login/",    views.login_view, name="login"),
+    path("logout/",   views.logout_view, name="logout"),
+    # ❌ select_project path हटाया गया – अब ज़रूरत नहीं
+    path("admit-card/", views.view_admit_card, name="admit_card"),
 ]

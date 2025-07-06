@@ -37,28 +37,27 @@ class StudentProfile(models.Model):
     def __str__(self):
         return f"{self.student_name} ({self.unique_id or 'Unassigned'})"
 
-# ───────────────────────────────
-# Fee Challan
+#--------------------------
+# Fee Challan   (updated)
 # ───────────────────────────────
 class FeeChallan(models.Model):
-    student         = models.OneToOneField(StudentProfile, on_delete=models.CASCADE)
-    challan_pdf     = models.FileField(upload_to='challans/', blank=True, null=True)
-    submitted_copy  = models.FileField(upload_to='challans/submitted/', blank=True, null=True)
-    
-    status = models.CharField(
-        max_length=10,
-        choices=[
-            ('Pending', 'Pending'),
-            ('Submitted', 'Submitted'),
-            ('Verified', 'Verified')
-        ],
-        default='Pending'
-    )
+    student        = models.OneToOneField(StudentProfile, on_delete=models.CASCADE)
+    challan_pdf    = models.FileField(upload_to="challans/", blank=True, null=True)
 
-    created_on = models.DateTimeField(auto_now_add=True)
+    STATUS_CHOICES = [
+        ("Pending",   "Pending"),   # created but not sent
+        ("Sent",      "Sent"),      # e‑mail sent to student
+        ("Submitted", "Submitted"), # student uploaded receipt
+        ("Verified",  "Verified"),  # admin accepted payment
+    ]
+    status         = models.CharField(max_length=10, choices=STATUS_CHOICES, default="Pending")
+
+    sent_on        = models.DateTimeField(null=True, blank=True)   # when e‑mail sent
+    created_on     = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Challan for {self.student.student_name} – {self.status}"
+
 
 # ───────────────────────────────
 # Project Master

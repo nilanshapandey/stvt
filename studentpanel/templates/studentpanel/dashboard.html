@@ -1,26 +1,29 @@
 {% extends "studentpanel/base.html" %}
+{% load static %}
 {% block title %}Dashboard{% endblock %}
 
 {% block page %}
-<!-- Main Sidebar -->
+<!-- ───────────────── Sidebar ───────────────── -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-  <a href="#" class="brand-link"><span class="brand-text font-weight-light">Student Panel</span></a>
+  <a href="#" class="brand-link">
+    <span class="brand-text font-weight-light">Student Panel</span>
+  </a>
 
   <div class="sidebar">
     <nav class="mt-2">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview">
-        <li class="nav-item"><a href="#profile" class="nav-link active" data-toggle="tab"><i class="nav-icon fas fa-user"></i><p>Profile</p></a></li>
-        <li class="nav-item"><a href="#lor" class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-file"></i><p>Uploaded LOR</p></a></li>
+        <li class="nav-item"><a href="#profile" class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-user"></i><p>Profile</p></a></li>
+        <li class="nav-item"><a href="#lor"     class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-file"></i><p>Uploaded LOR</p></a></li>
         <li class="nav-item"><a href="#challan" class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-file-invoice"></i><p>Challan</p></a></li>
-        <li class="nav-item"><a href="#batch" class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-list"></i><p>Batch Allotment</p></a></li>
-        <li class="nav-item"><a href="#admit" class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-id-card"></i><p>Admit Card</p></a></li>
+        <li class="nav-item"><a href="#batch"   class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-list"></i><p>Batch Allotment</p></a></li>
+        <li class="nav-item"><a href="#admit"   class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-id-card"></i><p>Admit Card</p></a></li>
         <li class="nav-item"><a href="{% url 'studentpanel:logout' %}" class="nav-link"><i class="nav-icon fas fa-sign-out-alt"></i><p>Logout</p></a></li>
       </ul>
     </nav>
   </div>
 </aside>
 
-<!-- Content Wrapper -->
+<!-- ───────────────── Content ───────────────── -->
 <div class="content-wrapper">
   <section class="content pt-3">
     <div class="container-fluid">
@@ -31,8 +34,9 @@
       {% endif %}
 
       <div class="tab-content">
-        <!-- ==================== Profile ==================== -->
-        <div class="tab-pane fade show active" id="profile">
+        <!-- ========== Profile ========== -->
+        <div class="tab-pane fade" id="profile">
+        
           <div class="row">
             <div class="col-md-4">
               <div class="card card-primary card-outline">
@@ -91,56 +95,93 @@
           </div>
         </div>
 
-        <!-- ==================== LOR ==================== -->
+        <!-- ========== LOR ========== -->
         <div class="tab-pane fade" id="lor">
           <div class="card"><div class="card-body">
-            <h4>Uploaded LOR</h4>
+            <h4>Letter of Recommendation (LOR)</h4>
             {% if profile.lor_file %}
-              <a href="{{ profile.lor_file.url }}" target="_blank" class="btn btn-outline-primary">View LOR</a>
+           
+              <a class="btn btn-outline-primary" target="_blank" href="{{ profile.lor_file.url }}">
+                <i class="fas fa-download mr-1"></i>Download LOR
+              </a>
             {% else %}
-              <p>No LOR uploaded.</p>
+              <p class="text-muted">No LOR uploaded during registration.</p>
             {% endif %}
           </div></div>
         </div>
 
-        <!-- ==================== Challan ==================== -->
+        <!-- ========== Challan ========== -->
         <div class="tab-pane fade" id="challan">
-          <div class="card"><div class="card-body"><h4>Fee Challan</h4>
+          <div class="card"><div class="card-body">
+            <h4>Fee Challan</h4>
             {% if challan %}
               {% if challan.challan_pdf %}
                 <p>
                   {% if challan.status == "Pending" %}Challan created; payment pending.
-                  {% elif challan.status == "Submitted" %}Submitted. Awaiting admin verification.
+                  {% elif challan.status == "Submitted" %}Submitted; awaiting admin verification.
                   {% elif challan.status == "Verified" %}Payment verified ✔️.
                   {% endif %}
                 </p>
-                <a class="btn btn-primary" href="{{ challan.challan_pdf.url }}" target="_blank">Download Challan</a>
+                <a class="btn btn-primary" target="_blank" href="{{ challan.challan_pdf.url }}">Download Challan</a>
               {% else %}
-                <p>Please wait&hellip; admin hasn’t generated your challan file yet.</p>
+                <p>Please wait… admin hasn’t generated your challan file yet.</p>
               {% endif %}
             {% else %}
-              <p>Please wait, your challan is not yet created.</p>
+              <p>Please wait… challan row not created yet.</p>
             {% endif %}
           </div></div>
         </div>
 
-        <!-- ==================== Batch ==================== -->
-        <div class="tab-pane fade" id="batch">
-          {% if profile.payment_verified %}
-            <p>Project selection form coming here…</p>
-          {% else %}
-            <p>Visible after payment verification.</p>
-          {% endif %}
-        </div>
+     
+<!-- ========== Batch Allotment ========== -->
+<div class="tab-pane fade" id="batch">
+  {% if not profile.payment_verified %}
+      <p class="text-muted">Project selection becomes available once your payment is verified.</p>
+  {% else %}
+      {% if project_req %}
+          <div class="alert alert-secondary">
+            Project requested: <strong>{{ project_req.project.title }}</strong><br>
+            Status: {{ project_req.status }}
+          </div>
+      {% elif available_projects %}
+          <form method="post" action="?tab=batch">
+            {% csrf_token %}
+            <h5>Select a Project</h5>
+            {% for proj in available_projects %}
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="project_id" id="p{{ proj.id }}" value="{{ proj.id }}" required>
+                <label class="form-check-label" for="p{{ proj.id }}">
+                   {{ proj.title }} ({{ proj.duration_weeks }} weeks) — {{ proj.available }} slots left
+                </label>
+              </div>
+            {% empty %}
+              <p>No projects currently available.</p>
+            {% endfor %}
+            <button class="btn btn-primary mt-2">Submit Request</button>
+          </form>
+      {% else %}
+          <p>No projects available for your branch (<strong>{{ profile.branch }}</strong>) right now.</p>
+      {% endif %}
+  {% endif %}
+</div>
 
-        <!-- ==================== Admit Card ==================== -->
-        <div class="tab-pane fade" id="admit">
-          {% if id_card %}
-            <a class="btn btn-success" target="_blank" href="{{ id_card.id_pdf.url }}">Download Admit Card</a>
-          {% else %}
-            <p>Admit card available once batch is approved.</p>
-          {% endif %}
-        </div>
+<!-- ========== Admit Card ========== -->
+<div class="tab-pane fade" id="admit">
+  {% if id_card %}
+    <a class="btn btn-success" target="_blank" href="{% url 'studentpanel:admit_card' %}">
+    <i class="fas fa-download mr-1"></i>Download Admit Card
+</a>
+
+  {% elif project_req and project_req.status == "Approved" %}
+      <div class="alert alert-info">Admit card will be sent shortly.</div>
+  {% elif project_req %}
+      <div class="alert alert-warning">Your project request is pending admin approval.</div>
+  {% else %}
+      <p class="text-muted">Admit card becomes available after project approval.</p>
+  {% endif %}
+</div>
+
+
       </div>
     </div>
   </section>
@@ -149,12 +190,28 @@
 {% block extra_js %}
 <script>
   $(function () {
-    const tab = new URLSearchParams(window.location.search).get("tab");
-    if (tab) {
-      $('a[data-toggle="tab"][href="#' + tab + '"]').tab("show");
-    }
+      // ----- helper to switch tab & sidebar state -----
+      function showTab(targetID) {
+          // content
+          $('.tab-pane').removeClass('show active');
+          $(targetID).addClass('show active');
+          // sidebar
+          $('.sidebar a[data-toggle="tab"]').removeClass('active');
+          $('.sidebar a[href="' + targetID + '"]').addClass('active');
+      }
+
+      // ----- sidebar click -----
+      $('.sidebar a[data-toggle="tab"]').on('click', function (e) {
+          e.preventDefault();
+          const target = $(this).attr('href');
+          showTab(target);
+          history.replaceState(null, '', '?tab=' + target.substring(1));   // update URL (optional)
+      });
+
+      // ----- initial load (query ?tab=...) -----
+      const initial = new URLSearchParams(window.location.search).get('tab') || 'profile';
+      showTab('#' + initial);
   });
 </script>
 {% endblock %}
-
 {% endblock %}
