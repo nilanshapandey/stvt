@@ -56,6 +56,7 @@ def dashboard(request):
     if not profile:
         messages.warning(request, "Student profile not found. Please register first.")
         return redirect("studentpanel:register")
+    
 
     # 2️⃣  related objects
     challan     = FeeChallan.objects.filter(student=profile).first()
@@ -100,17 +101,31 @@ def dashboard(request):
     return render(request, "studentpanel/dashboard.html", context)
 @login_required
 def view_admit_card(request):
+    """
+    Renders a REAL‑TIME admit card for the logged‑in student.
+    It uses exactly the same context (`profile`, `project`) that the
+    admin action used when it created the file.
+    """
     profile = StudentProfile.objects.filter(user=request.user).first()
     if not profile:
         messages.warning(request, "Profile not found.")
         return redirect("studentpanel:dashboard")
 
-    # try photo path
-    photo_path = profile.photo.url if profile.photo else None
+    # The student's approved project (if any)
+    psel = (
+        ProjectSelection.objects
+        .filter(student=profile, status="Approved")
+        .select_related("project")
+        .first()
+    )
+    if not psel:
+        messages.warning(request, "Project not approved yet.")
+        return redirect("studentpanel:dashboard")
 
     context = {
-        "trainee": profile,
-        "photo_path": photo_path
+        "profile": profile,
+        "project": psel.project,
     }
     return render(request, "studentpanel/admit_card.html", context)
+
 

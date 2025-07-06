@@ -185,7 +185,7 @@ class ProjectSelectionAdmin(admin.ModelAdmin):
         sel.save(update_fields=["status"])
         self.message_user(request, "Project approved.", level=messages.SUCCESS)
         return redirect("..")
-
+# studentpanel/admin.py  ─── just replace _send_admit
     def _send_admit(self, request, pk):
         sel = get_object_or_404(ProjectSelection, pk=pk)
         if sel.status != "Approved":
@@ -193,32 +193,41 @@ class ProjectSelectionAdmin(admin.ModelAdmin):
             return redirect("..")
 
         profile = sel.student
+        project = sel.project            # ← the approved project
 
-        # Map StudentProfile fields to names template expects
+        # ---- build context for the new template ----
         ctx = {
-            "trainee": {
-                "unique_id":  profile.unique_id,
-                "name":       profile.student_name,
-                "father_name": profile.father_name,
-                "address":    profile.address,
-                "mobile_number": profile.mobile,
-                # dummy objects so .name or .title access works
-                "branch":      type("x", (), {"name": profile.branch})(),
-                "institution": type("x", (), {"name": profile.college})(),
-                "year":        type("x", (), {"title": profile.course})(),
-                # training domain details
-                "shop_section":      type("x", (), {"name": sel.project.branch})(),
-                "training_domain":   type("x", (), {
-                    "batch_number": sel.project.pk,
-                    "project_code":  sel.project.id,
-                    "domain_name":   sel.project.title,
-                })(),
-                # validity dates (today .. +duration)
-                "valid_from":  date.today(),
-                "valid_to":    date.today() + sel.project.duration_weeks * datetime.timedelta(weeks=1),
-            },
-            "photo_path": profile.photo.url if profile.photo else None,
+            "profile": profile,
+            "project": project,
         }
+
+        admit_html = render_to_string("studentpanel/admit_card.html", ctx)
+
+        idcard, _ = IDCard.objects.get_or_create(student=profile)
+        idcard.id_pdf.save(
+            f"admit_{profile.unique_id}.html",
+            ContentFile(admit_html.encode("utf-8")),
+        )
+        idcard.save()
+
+        # mail link to student
+        dash_link = request.build_absolute_uri("/dashboard/?tab=admit")
+        send_mail(
+            "Batch Allotted – Download Your Admit Card",
+            (
+                f"Dear {profile.student_name},\n\n"
+                "Your batch has been confirmed. "
+                "Please download your admit card from the dashboard:\n"
+                f"{dash_link}\n\nRegards,\nTraining Centre"
+            ),
+            settings.DEFAULT_FROM_EMAIL,
+            [profile.user.email],
+            fail_silently=True,
+        )
+
+        self.message_user(request, "Admit card generated & e‑mailed.", level=messages.SUCCESS)
+        return redirect("..")
+
 
         # generate admit HTML
         admit_html = render_to_string("studentpanel/admit_card.html", ctx)
