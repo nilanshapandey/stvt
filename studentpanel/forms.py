@@ -26,9 +26,15 @@ class RegistrationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for f in self.fields.values():
+        for name, f in self.fields.items():
+            # Add form-control to all except file and checkbox
             if not isinstance(f.widget, (forms.FileInput, forms.CheckboxInput)):
-                f.widget.attrs["class"] = "form-control"
+                existing = f.widget.attrs.get("class", "")
+                f.widget.attrs["class"] = (existing + " form-control").strip()
+            # Add form-check-input to checkboxes for AdminLTE
+            if isinstance(f.widget, forms.CheckboxInput):
+                existing = f.widget.attrs.get("class", "")
+                f.widget.attrs["class"] = (existing + " form-check-input").strip()
 
     def clean_username(self):
         u = self.cleaned_data["username"]

@@ -4,6 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <title>{% block title %}Student Panel{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Student Panel for managing courses, assignments, and grades">                   
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/128/3135/3135715.png" type="image/x-icon">                                                                     
 
   <!-- AdminLTE 3 CSS & dependencies (CDN) -->
   <link rel="stylesheet"
@@ -14,8 +17,20 @@
   {% block extra_css %}{% endblock %}
 </head>
 <body class="hold-transition sidebar-mini">
+
 <div class="wrapper">
   {% block page %}{% endblock %}
+
+  <!-- AdminLTE Footer -->
+  <footer class="main-footer" style="background: #f4f6f9; border-top: 1px solid #dee2e6; min-height: 48px;">
+    <div class="container-fluid p-0">
+      <div class="d-flex justify-content-end align-items-center" style="height: 48px;">
+        <span class="text-muted small pr-3">Design &amp; Developed by 
+          <a href="https://www.linkedin.com/in/nilansha-pandey-9586b026b/" target="_blank" rel="noopener" class="font-weight-bold text-primary">Nilansha</a>
+        </span>
+      </div>
+    </div>
+  </footer>
 </div>
 
 <!-- jQuery + AdminLTE JS -->

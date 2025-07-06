@@ -1,54 +1,161 @@
 {% extends "studentpanel/base.html" %}
 {% load static %}
-{% block title %}Student Registration{% endblock %}
+{% block title %}Student Registration{% endblock %}
 
 {% block page %}
-<div class="content-wrapper" style="margin-left:0">
+<!-- AdminLTE & jQuery CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+<style>
+  .register-card {
+    max-width: 420px;
+    margin: 0 auto;
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+  .register-card .card-header {
+    border-radius: 1rem 1rem 0 0;
+  }
+  .register-card .form-group label {
+    font-weight: 500;
+  }
+  .register-card input.form-control, .register-card select.form-control, .register-card textarea.form-control {
+    border-radius: 0.5rem;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    box-shadow: none;
+    border: 1.5px solid #ced4da;
+  }
+  .register-card input.form-control:focus, .register-card select.form-control:focus, .register-card textarea.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.15);
+  }
+  .register-card input.form-control:hover, .register-card select.form-control:hover, .register-card textarea.form-control:hover {
+    border-color: #0056b3;
+    box-shadow: 0 0 6px 0 rgba(0,86,179,0.12);
+  }
+  .register-card .is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 2px rgba(220,53,69,0.12);
+  }
+  .register-card .btn-primary {
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .register-card .btn-primary:hover {
+    background: #0056b3;
+    box-shadow: 0 4px 16px 0 rgba(0,86,179,0.12);
+  }
+</style>
+
+<div class="content-wrapper" style="margin-left:0; background: #f4f6f9; min-height: 100vh;">
   <section class="content pt-5">
     <div class="container">
       <div class="row justify-content-center">
-        <div class="col-md-7">
-
-          <!-- card -->
-          <div class="card card-primary">
-            <div class="card-header">
-              <h3 class="card-title mb-0">Student Registration</h3>
+        <div class="col-12 d-flex justify-content-center">
+          <div class="card card-primary shadow-lg register-card w-100">
+            <div class="card-header bg-gradient-primary">
+              <h3 class="card-title mb-0"><i class="fas fa-user-plus mr-2"></i>Student Registration</h3>
             </div>
-
-            <form method="POST" enctype="multipart/form-data">
+            <form id="registerForm" method="POST" enctype="multipart/form-data" novalidate autocomplete="off">
               {% csrf_token %}
               <div class="card-body">
                 {{ form.non_field_errors }}
-
                 {% for field in form %}
                   <div class="form-group">
                     {{ field.label_tag }}
-
                     <!-- ---------- input ---------- -->
-                    {{ field }}
-
-                    {% if field.help_text %}
-                      <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% if field.field.widget.input_type == 'checkbox' %}
+                      <div class="form-check">
+                        {{ field }}
+                        {% if field.help_text %}
+                          <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                      </div>
+                    {% else %}
+                      {{ field }}
+                      {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                      {% endif %}
                     {% endif %}
                     <small class="text-danger">{{ field.errors|striptags }}</small>
                   </div>
                 {% endfor %}
               </div>
-
-              <div class="card-footer text-right">
-                <button type="submit" class="btn btn-primary">Register</button>
+              <div class="card-footer text-right bg-white border-top-0">
+                <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-user-check mr-1"></i>Register</button>
               </div>
             </form>
           </div>
-
-          <p class="text-center mt-2">
+        </div>
+        <div class="col-12">
+          <p class="text-center mt-3">
             Already registered?
-            <a href="{% url 'studentpanel:login' %}">Login here</a>
+            <a href="{% url 'studentpanel:login' %}"><b>Login here</b></a>
           </p>
-
         </div>
       </div>
     </div>
   </section>
 </div>
+
+<script>
+// Enhanced AdminLTE style form validation
+$(function() {
+  function validateField($field) {
+    let valid = true;
+    // Required check
+    if ($field.prop('required')) {
+      if (!$field.val() || ($field.attr('type') === 'checkbox' && !$field.is(':checked'))) {
+        $field.addClass('is-invalid');
+        valid = false;
+      } else {
+        $field.removeClass('is-invalid');
+      }
+    }
+    // Email validation
+    if ($field.attr('type') === 'email' && $field.val()) {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test($field.val())) {
+        $field.addClass('is-invalid');
+        valid = false;
+      } else {
+        $field.removeClass('is-invalid');
+      }
+    }
+    // Password min length (if field name contains 'password')
+    if ($field.attr('type') === 'password' && $field.val()) {
+      if ($field.val().length < 6) {
+        $field.addClass('is-invalid');
+        valid = false;
+      } else {
+        $field.removeClass('is-invalid');
+      }
+    }
+    return valid;
+  }
+
+  $('#registerForm').on('submit', function(e) {
+    let valid = true;
+    $(this).find('input,select,textarea').each(function() {
+      if (!validateField($(this))) {
+        valid = false;
+      }
+    });
+    if (!valid) {
+      e.preventDefault();
+      // Optionally, scroll to first error
+      $('html, body').animate({ scrollTop: $('.is-invalid').first().offset().top - 100 }, 400);
+    }
+  });
+
+  // Remove error on input and revalidate on change
+  $('#registerForm input, #registerForm select, #registerForm textarea').on('input change blur', function() {
+    validateField($(this));
+  });
+});
+</script>
 {% endblock %}

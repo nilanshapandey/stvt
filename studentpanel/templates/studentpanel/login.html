@@ -1,28 +1,128 @@
 {% extends "studentpanel/base.html" %}
 {% block title %}Login{% endblock %}
 {% block page %}
-<div class="login-page" style="min-height:496.8px">
-  <div class="login-box">
-    <div class="login-logo"><b>Summer&nbsp;Training</b> Portal</div>
-    <div class="card">
-      <div class="card-body login-card-body">
-        {% if messages %}{% for m in messages %}<p class="text-danger">{{ m }}</p>{% endfor %}{% endif %}
-        <form method="post">
-          {% csrf_token %}
-          <div class="input-group mb-3">
-            <input name="username" class="form-control" placeholder="Username">
-            <div class="input-group-append"><div class="input-group-text"><span class="fas fa-user"></span></div></div>
+<!-- AdminLTE & jQuery CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+<style>
+  .login-card {
+    max-width: 420px;
+    margin: 0 auto;
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+  .login-card .card-header {
+    border-radius: 1rem 1rem 0 0;
+  }
+  .login-card .form-group label {
+    font-weight: 500;
+  }
+  .login-card input.form-control {
+    border-radius: 0.5rem;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    box-shadow: none;
+    border: 1.5px solid #ced4da;
+  }
+  .login-card input.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.15);
+  }
+  .login-card input.form-control:hover {
+    border-color: #0056b3;
+    box-shadow: 0 0 6px 0 rgba(0,86,179,0.12);
+  }
+  .login-card .is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 2px rgba(220,53,69,0.12);
+  }
+  .login-card .btn-primary {
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .login-card .btn-primary:hover {
+    background: #0056b3;
+    box-shadow: 0 4px 16px 0 rgba(0,86,179,0.12);
+  }
+</style>
+
+<div class="content-wrapper" style="margin-left:0; background: #f4f6f9; min-height: 100vh;">
+  <section class="content pt-5">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 d-flex justify-content-center">
+          <div class="card card-primary shadow-lg login-card w-100">
+            <div class="card-header bg-gradient-primary">
+              <h3 class="card-title mb-0"><i class="fas fa-sign-in-alt mr-2"></i>Login</h3>
+            </div>
+            <div class="card-body login-card-body">
+              <div class="login-logo text-center mb-3"><b>Summer&nbsp;Training</b> Portal</div>
+              {% if messages %}{% for m in messages %}<p class="text-danger">{{ m }}</p>{% endfor %}{% endif %}
+              <form id="loginForm" method="post" novalidate autocomplete="off">
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                  <div class="input-group">
+                    <input name="username" class="form-control" placeholder="Username" required autofocus>
+                    <div class="input-group-append"><div class="input-group-text"><span class="fas fa-user"></span></div></div>
+                  </div>
+                  <small class="text-danger" id="username-error"></small>
+                </div>
+                <div class="form-group mb-3">
+                  <div class="input-group">
+                    <input type="password" name="password" class="form-control" placeholder="Password" required>
+                    <div class="input-group-append"><div class="input-group-text"><span class="fas fa-lock"></span></div></div>
+                  </div>
+                  <small class="text-danger" id="password-error"></small>
+                </div>
+                <div class="row">
+                  <div class="col-12"><button class="btn btn-primary btn-block">Sign In</button></div>
+                </div>
+              </form>
+            </div>
+            <div class="card-footer text-center bg-white border-top-0">
+              <span>Don't have an account? <a href="{% url 'studentpanel:register' %}"><b>Register here</b></a></span>
+            </div>
           </div>
-          <div class="input-group mb-3">
-            <input type="password" name="password" class="form-control" placeholder="Password">
-            <div class="input-group-append"><div class="input-group-text"><span class="fas fa-lock"></span></div></div>
-          </div>
-          <div class="row">
-            <div class="col-12"><button class="btn btn-primary btn-block">Sign In</button></div>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 </div>
+
+<script>
+// Enhanced AdminLTE style login form validation
+$(function() {
+  function validateLoginField($field) {
+    let valid = true;
+    if ($field.prop('required')) {
+      if (!$field.val()) {
+        $field.addClass('is-invalid');
+        valid = false;
+      } else {
+        $field.removeClass('is-invalid');
+      }
+    }
+    return valid;
+  }
+
+  $('#loginForm').on('submit', function(e) {
+    let valid = true;
+    $(this).find('input[required]').each(function() {
+      if (!validateLoginField($(this))) {
+        valid = false;
+      }
+    });
+    if (!valid) {
+      e.preventDefault();
+      $('html, body').animate({ scrollTop: $('.is-invalid').first().offset().top - 100 }, 400);
+    }
+  });
+  $('#loginForm input').on('input change blur', function() {
+    validateLoginField($(this));
+  });
+});
+</script>
 {% endblock %}

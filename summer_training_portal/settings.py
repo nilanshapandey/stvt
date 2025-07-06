@@ -1,3 +1,48 @@
+# Jazzmin Admin Customization
+JAZZMIN_SETTINGS = {
+    "site_title": "Summer Training Admin",
+    "site_header": "Summer Training Portal Admin",
+    "site_brand": "Summer Training Portal",
+    "copyright": " Design & Developed by <a href='https://www.linkedin.com/in/nilansha-pandey-9586b026b/' target='_blank' style='color:#007bff;font-weight:bold;text-decoration:none;'>Nilansha</a>",
+    "welcome_sign": "Welcome to the Summer Training Admin Portal",
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+    "order_with_respect_to": ["studentpanel", "auth"],
+    "custom_links": {},
+    "show_ui_builder": False,
+    # Side menu icons for each app/model
+    "icons": {
+        "studentpanel": "fas fa-user-graduate",
+        "studentpanel.studentprofile": "fas fa-id-card",
+        "studentpanel.feechallan": "fas fa-file-invoice-dollar",
+        "studentpanel.project": "fas fa-project-diagram",
+        "studentpanel.projectselection": "fas fa-tasks",
+        "studentpanel.idcard": "fas fa-address-card",
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.group": "fas fa-users",
+    },
+    # UI Tweaks
+    "theme": "cosmo",  # Try 'cosmo', 'flatly', 'darkly', etc.
+    "navbar_small_text": True,
+    "footer_small_text": True,
+    "body_small_text": False,
+    "brand_small_text": True,
+    "sidebar_small_text": True,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": True,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": True,
+    "login_logo": "logo.png",
+    "login_logo_dark": "logo.png",
+    "site_logo": "logo.png",
+    "site_logo_classes": "img-circle elevation-3",
+    "site_icon": "logo.png",
+    "user_avatar": None,
+}
 """
 Django settings for summer_training_portal project.
 
@@ -134,8 +179,9 @@ LOGIN_URL = "/login/"
 # Where to go right *after* a successful login
 LOGIN_REDIRECT_URL = "/dashboard/"
 
+
 # After logging out, send back to login
-LOGOUT_REDIRECT_URL = "/login/"
+LOGOUT_REDIRECT_URL = "/admin/login/"
 
 
 DEFAULT_FROM_EMAIL = "nilansha777@gmail.com"   # अपनी Gmail या SMTP की ID

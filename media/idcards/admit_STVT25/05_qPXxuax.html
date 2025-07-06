@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Photo Identity Slip – {{ profile.unique_id }}</title>
+  <title>Photo Identity Slip – STVT25/05</title>
 
   <!-- Bootstrap (Admin‑LTE is not required for a printable slip) -->
   <link rel="stylesheet"
@@ -30,27 +30,27 @@
   <!-- ═════════════════ SLIP 1 ═════════════════ -->
   <div class="card-header">
       <h3>PHOTO IDENTITY SLIP – 2025</h3>
-      <div><b>B.Tech / Diploma VT ID No.:</b> {{ profile.unique_id }}</div>
-      <div><b>Concerned Shop / Section:</b> {{ project.branch }}</div>
+      <div><b>B.Tech / Diploma VT ID No.:</b> STVT25/05</div>
+      <div><b>Concerned Shop / Section:</b> Computer Science</div>
   </div>
 
   <div class="d-flex justify-content-between">
       <table>
-          <tr><td><strong>Name of Candidate:</strong></td><td>{{ profile.student_name }}</td></tr>
-          <tr><td><strong>Father's Name:</strong></td><td>{{ profile.father_name }}</td></tr>
-          <tr><td><strong>Year / Course:</strong></td><td>{{ profile.course }}</td></tr>
-          <tr><td><strong>Branch:</strong></td><td>{{ profile.branch }}</td></tr>
-          <tr><td><strong>Institution:</strong></td><td>{{ profile.college }}</td></tr>
-          <tr><td><strong>Address:</strong></td><td>{{ profile.address }}</td></tr>
-          <tr><td><strong>Mobile No.:</strong></td><td>{{ profile.mobile }}</td></tr>
-          <tr><td><strong>Batch No.:</strong></td><td>{{ project.id }}</td></tr>
-         
-          <tr><td><strong>Project Title:</strong></td><td>{{ project.title }}</td></tr>
+          <tr><td><strong>Name of Candidate:</strong></td><td>Harsh Pandey</td></tr>
+          <tr><td><strong>Father's Name:</strong></td><td>Krishna Pandey</td></tr>
+          <tr><td><strong>Year / Course:</strong></td><td>B-tech</td></tr>
+          <tr><td><strong>Branch:</strong></td><td>Computer Science</td></tr>
+          <tr><td><strong>Institution:</strong></td><td>BBD</td></tr>
+          <tr><td><strong>Address:</strong></td><td>Lucknow</td></tr>
+          <tr><td><strong>Mobile No.:</strong></td><td>9555299718</td></tr>
+          <tr><td><strong>Batch No.:</strong></td><td>11</td></tr>
+          <tr><td><strong>Project Code:</strong></td><td>11</td></tr>
+          <tr><td><strong>Project Title:</strong></td><td>Software development for data keeping of STC (joining,feedback,training and exam&amp; marks.etc)</td></tr>
       </table>
 
-      {% if profile.photo %}
-        <img class="photo" src="{{ profile.photo.url }}" alt="Photo">
-      {% endif %}
+      
+        <img class="photo" src="/media/photos/harsh123_anup.jpeg" alt="Photo">
+      
   </div>
 
   <table class="mt-4">
@@ -70,23 +70,23 @@
 
   <div class="d-flex justify-content-between">
       <table>
-          <tr><td><strong>Concerned Shop/Section:</strong></td><td>{{ project.branch }}</td></tr>
-          <tr><td><strong>Name of Candidate:</strong></td><td>{{ profile.student_name }}</td></tr>
-          <tr><td><strong>Father's Name:</strong></td><td>{{ profile.father_name }}</td></tr>
-          <tr><td><strong>Valid From:</strong></td><td>{{ project.start_date }} to {{ project.end_date }}</td></tr>
-          <tr><td><strong>Year:</strong></td><td>{{ profile.course }}</td></tr>
-          <tr><td><strong>Branch:</strong></td><td>{{ profile.branch }}</td></tr>
-          <tr><td><strong>Institution:</strong></td><td>{{ profile.college }}</td></tr>
-          <tr><td><strong>Address:</strong></td><td>{{ profile.address }}</td></tr>
-          <tr><td><strong>Mobile No.:</strong></td><td>{{ profile.mobile }}</td></tr>
-          <tr><td><strong>Batch No.:</strong></td><td>{{ project.id }}</td></tr>
-        
-          <tr><td><strong>Project Title:</strong></td><td>{{ project.title }}</td></tr>
+          <tr><td><strong>Concerned Shop/Section:</strong></td><td>Computer Science</td></tr>
+          <tr><td><strong>Name of Candidate:</strong></td><td>Harsh Pandey</td></tr>
+          <tr><td><strong>Father's Name:</strong></td><td>Krishna Pandey</td></tr>
+          <tr><td><strong>Valid From:</strong></td><td>July 18, 2025 to Sept. 13, 2025</td></tr>
+          <tr><td><strong>Year:</strong></td><td>B-tech</td></tr>
+          <tr><td><strong>Branch:</strong></td><td>Computer Science</td></tr>
+          <tr><td><strong>Institution:</strong></td><td>BBD</td></tr>
+          <tr><td><strong>Address:</strong></td><td>Lucknow</td></tr>
+          <tr><td><strong>Mobile No.:</strong></td><td>9555299718</td></tr>
+          <tr><td><strong>Batch No.:</strong></td><td>11</td></tr>
+          <tr><td><strong>Project Code:</strong></td><td>11</td></tr>
+          <tr><td><strong>Project Title:</strong></td><td>Software development for data keeping of STC (joining,feedback,training and exam&amp; marks.etc)</td></tr>
       </table>
 
-      {% if profile.photo %}
-        <img class="photo" src="{{ profile.photo.url }}" alt="Photo">
-      {% endif %}
+      
+        <img class="photo" src="/media/photos/harsh123_anup.jpeg" alt="Photo">
+      
   </div>
 
   <table class="mt-4">

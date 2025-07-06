@@ -34,60 +34,74 @@
       {% endif %}
 
       <div class="tab-content">
+
         <!-- ========== Profile ========== -->
         <div class="tab-pane fade" id="profile">
-        
           <div class="row">
             <div class="col-md-4">
-              <div class="card card-primary card-outline">
+              <div class="card card-primary card-outline shadow-sm">
                 <div class="card-body box-profile">
-                  <div class="text-center">
+                  <div class="text-center mb-2">
                     {% if profile.photo %}
-                      <img class="profile-user-img img-fluid img-circle" src="{{ profile.photo.url }}">
+                      <img class="profile-user-img img-fluid img-circle shadow" src="{{ profile.photo.url }}">
                     {% else %}
-                      <img class="profile-user-img img-fluid img-circle" src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/avatar.png">
+                      <img class="profile-user-img img-fluid img-circle shadow" src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/avatar.png">
                     {% endif %}
                   </div>
-                  <h3 class="profile-username text-center">{{ profile.student_name }}</h3>
-                  <p class="text-muted text-center">{{ profile.course }} – {{ profile.branch }}</p>
-
+                  <h3 class="profile-username text-center mb-1">{{ profile.student_name }}</h3>
+                  <p class="text-muted text-center mb-2">{{ profile.course }} – {{ profile.branch }}</p>
                   <ul class="list-group list-group-unbordered mb-3">
-                    <li class="list-group-item"><b>Unique ID</b> <span class="float-right">{{ profile.unique_id }}</span></li>
-                    <li class="list-group-item"><b>College</b> <span class="float-right">{{ profile.college }}</span></li>
-                    <li class="list-group-item"><b>Mobile</b> <span class="float-right">{{ profile.mobile }}</span></li>
-                    <li class="list-group-item"><b>Email</b> <span class="float-right">{{ profile.user.email }}</span></li>
+                    <li class="list-group-item"><b><i class="fas fa-id-badge mr-1"></i>Unique ID</b> <span class="float-right">{{ profile.unique_id }}</span></li>
+                    <li class="list-group-item"><b><i class="fas fa-building mr-1"></i>College</b> <span class="float-right">{{ profile.college }}</span></li>
+                    <li class="list-group-item"><b><i class="fas fa-phone mr-1"></i>Mobile</b> <span class="float-right">{{ profile.mobile }}</span></li>
+                    <li class="list-group-item"><b><i class="fas fa-envelope mr-1"></i>Email</b> <span class="float-right">{{ profile.user.email }}</span></li>
                   </ul>
-
-                  <a href="#lor" data-toggle="tab" class="btn btn-primary btn-block"><b>View LOR</b></a>
+                 
                 </div>
               </div>
             </div>
-
             <div class="col-md-8">
-              <div class="card">
-                <div class="card-header"><h3 class="card-title">Full Details</h3></div>
+              <div class="card shadow-sm">
+                <div class="card-header bg-gradient-primary text-white"><h3 class="card-title mb-0"><i class="fas fa-info-circle mr-1"></i>Full Details</h3></div>
                 <div class="card-body">
-                  <strong><i class="fas fa-user mr-1"></i> Father’s Name</strong>
-                  <p class="text-muted">{{ profile.father_name }}</p><hr>
-
-                  <strong><i class="fas fa-building mr-1"></i> College</strong>
-                  <p class="text-muted">{{ profile.college }}</p><hr>
-
-                  <strong><i class="fas fa-graduation-cap mr-1"></i> Course / Branch</strong>
-                  <p class="text-muted">{{ profile.course }} – {{ profile.branch }}</p><hr>
-
-                  <strong><i class="fas fa-map-marker-alt mr-1"></i> Address</strong>
-                  <p class="text-muted">{{ profile.address }}</p><hr>
-
-                  <strong><i class="fas fa-phone mr-1"></i> Mobile</strong>
-                  <p class="text-muted">{{ profile.mobile }}</p><hr>
-
-                  <strong><i class="fas fa-envelope mr-1"></i> Email</strong>
-                  <p class="text-muted">{{ profile.user.email }}</p><hr>
-
+                  <div class="alert alert-info p-2 mb-3"><i class="fas fa-user-graduate mr-1"></i>Welcome to your dashboard! Here you can view and manage your profile, documents, and project status.</div>
+                  <div class="row mb-2">
+                    <div class="col-md-6">
+                      <strong><i class="fas fa-user mr-1"></i> Father’s Name</strong>
+                      <p class="text-muted mb-2">{{ profile.father_name }}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <strong><i class="fas fa-building mr-1"></i> College</strong>
+                      <p class="text-muted mb-2">{{ profile.college }}</p>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="col-md-6">
+                      <strong><i class="fas fa-graduation-cap mr-1"></i> Course / Branch</strong>
+                      <p class="text-muted mb-2">{{ profile.course }} – {{ profile.branch }}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <strong><i class="fas fa-map-marker-alt mr-1"></i> Address</strong>
+                      <p class="text-muted mb-2">{{ profile.address }}</p>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="col-md-6">
+                      <strong><i class="fas fa-phone mr-1"></i> Mobile</strong>
+                      <p class="text-muted mb-2">{{ profile.mobile }}</p>
+                    </div>
+                    <div class="col-md-6">
+                      <strong><i class="fas fa-envelope mr-1"></i> Email</strong>
+                      <p class="text-muted mb-2">{{ profile.user.email }}</p>
+                    </div>
+                  </div>
                   {% if profile.lor_file %}
-                    <strong><i class="fas fa-file-alt mr-1"></i> LOR</strong>
-                    <p><a class="btn btn-outline-info btn-sm" target="_blank" href="{{ profile.lor_file.url }}">Download LOR</a></p>
+                    <div class="row mb-2">
+                      <div class="col-md-12">
+                        <strong><i class="fas fa-file-alt mr-1"></i> LOR</strong>
+                        <p><a class="btn btn-outline-info btn-sm" target="_blank" href="{{ profile.lor_file.url }}">Download LOR</a></p>
+                      </div>
+                    </div>
                   {% endif %}
                 </div>
               </div>
@@ -97,88 +111,123 @@
 
         <!-- ========== LOR ========== -->
         <div class="tab-pane fade" id="lor">
-          <div class="card"><div class="card-body">
-            <h4>Letter of Recommendation (LOR)</h4>
-            {% if profile.lor_file %}
-           
-              <a class="btn btn-outline-primary" target="_blank" href="{{ profile.lor_file.url }}">
-                <i class="fas fa-download mr-1"></i>Download LOR
-              </a>
-            {% else %}
-              <p class="text-muted">No LOR uploaded during registration.</p>
-            {% endif %}
-          </div></div>
+          <div class="card card-outline card-info shadow-sm">
+            <div class="card-header bg-gradient-info text-white">
+              <h4 class="card-title mb-0"><i class="fas fa-file-alt mr-1"></i>Letter of Recommendation (LOR)</h4>
+            </div>
+            <div class="card-body">
+              <p class="mb-2"><i class="fas fa-info-circle mr-1"></i>Your LOR is required for project allotment and future references. Please keep it safe.</p>
+              {% if profile.lor_file %}
+                <a class="btn btn-outline-primary btn-sm" target="_blank" href="{{ profile.lor_file.url }}">
+                  <i class="fas fa-download mr-1"></i>Download LOR
+                </a>
+              {% else %}
+                <p class="text-muted">No LOR uploaded during registration.</p>
+              {% endif %}
+            </div>
+          </div>
         </div>
 
-        <!-- ========== Challan ========== -->
-        <div class="tab-pane fade" id="challan">
-          <div class="card"><div class="card-body">
-            <h4>Fee Challan</h4>
-            {% if challan %}
-              {% if challan.challan_pdf %}
-                <p>
-                  {% if challan.status == "Pending" %}Challan created; payment pending.
-                  {% elif challan.status == "Submitted" %}Submitted; awaiting admin verification.
-                  {% elif challan.status == "Verified" %}Payment verified ✔️.
-                  {% endif %}
-                </p>
-                <a class="btn btn-primary" target="_blank" href="{{ challan.challan_pdf.url }}">Download Challan</a>
-              {% else %}
-                <p>Please wait… admin hasn’t generated your challan file yet.</p>
-              {% endif %}
-            {% else %}
-              <p>Please wait… challan row not created yet.</p>
+<!-- ========== Challan ========== -->
+<div class="tab-pane fade" id="challan">
+  <div class="card card-outline card-warning shadow-sm">
+    <div class="card-header bg-gradient-warning text-white d-flex align-items-center">
+      <i class="fas fa-file-invoice mr-2 fa-lg"></i>
+      <h4 class="card-title mb-0">Fee Challan</h4>
+    </div>
+    <div class="card-body">
+      <p class="mb-2"><i class="fas fa-info-circle mr-1"></i>Your challan is required for payment verification. Download and submit it as per instructions.</p>
+      {% if challan %}
+        {% if challan.challan_pdf %}
+          <div class="mb-3">
+            {% if challan.status == "Pending" %}
+              <span class="badge badge-warning px-3 py-2"><i class="fas fa-hourglass-half mr-1"></i>Challan created; payment pending.</span>
+            {% elif challan.status == "Submitted" %}
+              <span class="badge badge-info px-3 py-2"><i class="fas fa-upload mr-1"></i>Submitted; awaiting admin verification.</span>
+            {% elif challan.status == "Verified" %}
+              <span class="badge badge-success px-3 py-2"><i class="fas fa-check-circle mr-1"></i>Payment verified</span>
             {% endif %}
-          </div></div>
-        </div>
+          </div>
+          <a class="btn btn-primary btn-sm font-weight-bold" target="_blank" href="{{ challan.challan_pdf.url }}"><i class="fas fa-download mr-1"></i>Download Challan</a>
+        {% else %}
+          <div class="alert alert-secondary mb-0"><i class="fas fa-spinner fa-spin mr-1"></i>Please wait… admin hasn’t generated your challan file yet.</div>
+        {% endif %}
+      {% else %}
+        <div class="alert alert-secondary mb-0"><i class="fas fa-spinner fa-spin mr-1"></i>Please wait… challan row not created yet.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
 
      
 <!-- ========== Batch Allotment ========== -->
 <div class="tab-pane fade" id="batch">
   {% if not profile.payment_verified %}
-      <p class="text-muted">Project selection becomes available once your payment is verified.</p>
+      <div class="alert alert-info mb-3"><i class="fas fa-info-circle mr-1"></i>Project selection becomes available once your payment is verified.</div>
   {% else %}
       {% if project_req %}
-          <div class="alert alert-secondary">
-            Project requested: <strong>{{ project_req.project.title }}</strong><br>
-            Status: {{ project_req.status }}
+          <div class="alert alert-secondary shadow-sm p-3 mb-3">
+            <i class="fas fa-tasks mr-1"></i>Project requested: <strong>{{ project_req.project.title }}</strong><br>
+            <span>Status: <span class="badge badge-pill badge-primary">{{ project_req.status }}</span></span>
+            <div class="mt-2 text-muted small"><i class="fas fa-info-circle mr-1"></i>You can only request one project at a time. Please wait for admin approval or contact support for changes.</div>
           </div>
       {% elif available_projects %}
-          <form method="post" action="?tab=batch">
-            {% csrf_token %}
-            <h5>Select a Project</h5>
-            {% for proj in available_projects %}
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="project_id" id="p{{ proj.id }}" value="{{ proj.id }}" required>
-                <label class="form-check-label" for="p{{ proj.id }}">
-                   {{ proj.title }} ({{ proj.duration_weeks }} weeks) — {{ proj.available }} slots left
-                </label>
-              </div>
-            {% empty %}
-              <p>No projects currently available.</p>
-            {% endfor %}
-            <button class="btn btn-primary mt-2">Submit Request</button>
-          </form>
+          <div class="card card-outline card-primary shadow-sm mb-3">
+            <div class="card-header bg-gradient-primary text-white d-flex align-items-center">
+              <i class="fas fa-list mr-2 fa-lg"></i>
+              <h5 class="card-title mb-0">Select a Project</h5>
+            </div>
+            <div class="card-body">
+              <div class="alert alert-info p-2 mb-3"><i class="fas fa-lightbulb mr-1"></i>Choose your preferred project from the list below. Slots are limited and will be allotted on a first-come, first-served basis.</div>
+              <form method="post" action="?tab=batch">
+                {% csrf_token %}
+                <div class="project-list">
+                  {% for proj in available_projects %}
+                    <div class="form-check mb-2 p-2 border rounded d-flex align-items-center" style="background:#f8f9fa;">
+                      <input class="form-check-input mt-0 mr-2" type="radio" name="project_id" id="p{{ proj.id }}" value="{{ proj.id }}" required>
+                      <label class="form-check-label font-weight-bold w-100" for="p{{ proj.id }}">
+                        <span class="text-primary"><i class="fas fa-project-diagram mr-1"></i>{{ proj.title }}</span>
+                        <span class="ml-2 badge badge-info">{{ proj.duration_weeks }} weeks</span>
+                        <span class="ml-2 badge badge-success">{{ proj.available }} slots left</span>
+                        <span class="d-block text-muted small mt-1"><i class="fas fa-clock mr-1"></i>Apply soon to secure your spot!</span>
+                      </label>
+                    </div>
+                  {% empty %}
+                    <p class="text-muted">No projects currently available.</p>
+                  {% endfor %}
+                </div>
+                <button class="btn btn-primary btn-sm mt-3"><i class="fas fa-paper-plane mr-1"></i>Submit Request</button>
+              </form>
+            </div>
+          </div>
       {% else %}
-          <p>No projects available for your branch (<strong>{{ profile.branch }}</strong>) right now.</p>
+          <div class="alert alert-warning p-3"><i class="fas fa-exclamation-circle mr-1"></i>No projects available for your branch (<strong>{{ profile.branch }}</strong>) right now.</div>
       {% endif %}
   {% endif %}
 </div>
 
 <!-- ========== Admit Card ========== -->
 <div class="tab-pane fade" id="admit">
-  {% if id_card %}
- <a class="btn btn-success" target="_blank" href="{% url 'studentpanel:admit_card' %}">
-    <i class="fas fa-download mr-1"></i>Download Admit Card
-</a>
-
-  {% elif project_req and project_req.status == "Approved" %}
-      <div class="alert alert-info">Admit card will be sent shortly.</div>
-  {% elif project_req %}
-      <div class="alert alert-warning">Your project request is pending admin approval.</div>
-  {% else %}
-      <p class="text-muted">Admit card becomes available after project approval.</p>
-  {% endif %}
+  <div class="card card-outline card-success shadow-sm">
+    <div class="card-header bg-gradient-success text-white d-flex align-items-center">
+      <i class="fas fa-id-card mr-2 fa-lg"></i>
+      <h4 class="card-title mb-0">Admit Card</h4>
+    </div>
+    <div class="card-body">
+      <p class="mb-2"><i class="fas fa-info-circle mr-1"></i>Your admit card is required for entry to the training program. Download and print it once available.</p>
+      {% if id_card %}
+        <a class="btn btn-success btn-sm btn-block font-weight-bold" target="_blank" href="{% url 'studentpanel:admit_card' %}">
+          <i class="fas fa-download mr-1"></i>Download Admit Card
+        </a>
+      {% elif project_req and project_req.status == "Approved" %}
+        <div class="alert alert-info mb-0"><i class="fas fa-info-circle mr-1"></i>Admit card will be sent shortly.</div>
+      {% elif project_req %}
+        <div class="alert alert-warning mb-0"><i class="fas fa-exclamation-circle mr-1"></i>Your project request is pending admin approval.</div>
+      {% else %}
+        <div class="alert alert-secondary mb-0"><i class="fas fa-info-circle mr-1"></i>Admit card becomes available after project approval.</div>
+      {% endif %}
+    </div>
+  </div>
 </div>
 
 
