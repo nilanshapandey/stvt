@@ -1,0 +1,61 @@
+<!-- templates/studentpanel/certificate_tab.html -->
+{% extends "studentpanel/base.html" %}
+{% block title %}Certificate{% endblock %}
+{% block page %}
+
+<div class="content-wrapper pt-4">
+  <div class="container">
+    <h3>Certificate</h3>
+    <hr>
+
+    {% if not certificate %}
+      <div class="alert alert-warning">
+        Your certificate has not been created yet. Please wait for admin approval.
+      </div>
+
+    {% elif not certificate.is_verified %}
+      <div class="alert alert-secondary">
+        Your certificate is under process.<br>
+        <strong>Status:</strong> Awaiting admin verification.
+      </div>
+
+    {% elif not certificate.certificate_pdf %}
+      <div class="alert alert-info">
+        Your certificate has been verified by admin.<br>
+        <strong>Status:</strong> Waiting to be sent.
+      </div>
+
+    {% else %}
+      <div class="alert alert-success">
+        🎉 Your certificate is ready and has been sent to your email.<br><br>
+        <a href="{{ certificate.certificate_pdf.url }}" target="_blank" class="btn btn-primary">
+          <i class="fas fa-download mr-1"></i>Download Certificate
+        </a>
+      </div>
+    {% endif %}
+
+    <div class="mt-4">
+      <h5>📌 Project Summary</h5>
+      <ul class="list-group">
+        <li class="list-group-item">
+          <strong>Project Title:</strong> {{ project.title }}
+        </li>
+        <li class="list-group-item">
+          <strong>Branch:</strong> {{ project.branch }}
+        </li>
+        <li class="list-group-item">
+          <strong>Duration:</strong> {{ project.duration_weeks }} weeks
+        </li>
+        <li class="list-group-item">
+          <strong>Start Date:</strong> {{ project.start_date|date:"d M, Y" }}
+        </li>
+        <li class="list-group-item">
+          <strong>End Date:</strong> {{ project.end_date|date:"d M, Y" }}
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

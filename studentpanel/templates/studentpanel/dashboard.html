@@ -13,11 +13,18 @@
     <nav class="mt-2">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview">
         <li class="nav-item"><a href="#profile" class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-user"></i><p>Profile</p></a></li>
-        <li class="nav-item"><a href="#lor"     class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-file"></i><p>Uploaded LOR</p></a></li>
+       <!--<li class="nav-item"><a href="#lor"     class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-file"></i><p>Uploaded LOR</p></a></li>--> 
         <li class="nav-item"><a href="#challan" class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-file-invoice"></i><p>Challan</p></a></li>
         <li class="nav-item"><a href="#batch"   class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-list"></i><p>Batch Allotment</p></a></li>
         <li class="nav-item"><a href="#admit"   class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-id-card"></i><p>Admit Card</p></a></li>
         <li class="nav-item"><a href="{% url 'studentpanel:logout' %}" class="nav-link"><i class="nav-icon fas fa-sign-out-alt"></i><p>Logout</p></a></li>
+
+        <li class="nav-item">
+        <a href="{% url 'studentpanel:certificate' %}" class="nav-link">
+       <i class="nav-icon fas fa-certificate"></i><p>Certificate</p>
+        </a>
+      </li>
+
       </ul>
     </nav>
   </div>
@@ -95,14 +102,14 @@
                       <p class="text-muted mb-2">{{ profile.user.email }}</p>
                     </div>
                   </div>
-                  {% if profile.lor_file %}
+             <!--     {% if profile.lor_file %}
                     <div class="row mb-2">
                       <div class="col-md-12">
                         <strong><i class="fas fa-file-alt mr-1"></i> LOR</strong>
                         <p><a class="btn btn-outline-info btn-sm" target="_blank" href="{{ profile.lor_file.url }}">Download LOR</a></p>
                       </div>
                     </div>
-                  {% endif %}
+                  {% endif %}-->
                 </div>
               </div>
             </div>
@@ -110,7 +117,7 @@
         </div>
 
         <!-- ========== LOR ========== -->
-        <div class="tab-pane fade" id="lor">
+       <!-- <div class="tab-pane fade" id="lor">
           <div class="card card-outline card-info shadow-sm">
             <div class="card-header bg-gradient-info text-white">
               <h4 class="card-title mb-0"><i class="fas fa-file-alt mr-1"></i>Letter of Recommendation (LOR)</h4>
@@ -126,7 +133,7 @@
               {% endif %}
             </div>
           </div>
-        </div>
+        </div>-->
 
 <!-- ========== Challan ========== -->
 <div class="tab-pane fade" id="challan">
@@ -229,6 +236,7 @@
     </div>
   </div>
 </div>
+
 
 
       </div>

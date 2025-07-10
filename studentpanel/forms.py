@@ -5,8 +5,8 @@ from django.core.exceptions import ValidationError
 from django.db.models import F
 from .models import StudentProfile, Project
 
-ALLOWED_LOR_TYPES = ["application/pdf", "image/jpeg"]
-MAX_LOR_SIZE_MB   = 2
+# ALLOWED_LOR_TYPES = ["application/pdf", "image/jpeg"]
+# MAX_LOR_SIZE_MB   = 2
 
 
 # ---------- Registration ----------
@@ -20,7 +20,8 @@ class RegistrationForm(forms.ModelForm):
         model  = StudentProfile
         fields = [
             "student_name", "father_name", "college", "course", "branch",
-            "address", "mobile", "photo", "lor_file",
+            "address", "mobile", "photo",
+            # "lor_file",
         ]
         widgets = {"address": forms.Textarea(attrs={"rows": 3})}
 
@@ -54,13 +55,13 @@ class RegistrationForm(forms.ModelForm):
             self.add_error("confirm_pass", "Passwords do not match.")
         return cleaned
 
-    def clean_lor_file(self):
-        file = self.cleaned_data["lor_file"]
-        if file.content_type not in ALLOWED_LOR_TYPES:
-            raise ValidationError("Only PDF or JPG allowed.")
-        if file.size > MAX_LOR_SIZE_MB * 1024 * 1024:
-            raise ValidationError("File too large (max 2 MB).")
-        return file
+    # def clean_lor_file(self):
+    #     file = self.cleaned_data["lor_file"]
+    #     if file.content_type not in ALLOWED_LOR_TYPES:
+    #         raise ValidationError("Only PDF or JPG allowed.")
+    #     if file.size > MAX_LOR_SIZE_MB * 1024 * 1024:
+    #         raise ValidationError("File too large (max 2 MB).")
+    #     return file
 
     def save(self, commit=True):
         data = self.cleaned_data

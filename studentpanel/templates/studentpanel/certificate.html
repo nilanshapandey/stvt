@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Certificate - {{ profile.student_name }}</title>
+  <style>
+    body {
+      font-family: 'Times New Roman', serif;
+      padding: 40px;
+      background: #fdfdfd url('/media/cert_assets/word/media/image1.png') no-repeat center;
+      background-size: contain;
+    }
+
+    .certificate {
+      border: 8px double #000;
+      padding: 30px;
+      max-width: 900px;
+      margin: auto;
+      background-color: rgba(255, 255, 255, 0.95);
+      position: relative;
+    }
+
+    .logo {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      width: 90px;
+    }
+
+    .header {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .title {
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      margin: 30px 0 20px;
+      text-decoration: underline;
+    }
+
+    .details {
+      font-size: 18px;
+      line-height: 1.8;
+      margin: 0 20px;
+      text-align: justify;
+    }
+
+    .footer {
+      margin-top: 60px;
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+    }
+
+    .footer .left,
+    .footer .right {
+      width: 40%;
+      text-align: center;
+    }
+
+    .seal-note {
+      text-align: center;
+      font-size: 12px;
+      margin-top: 30px;
+      color: #444;
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="certificate">
+  <img src="/media/cert_assets/word/media/image1.png" class="logo">
+
+  <div class="header">
+    SUPERVISORS TRAINING CENTRE<br>
+    Northern Railway, Charbagh, Lucknow
+  </div>
+
+  <div class="title">CERTIFICATE</div>
+
+  <div class="meta">
+    <div>S. No: {{ certificate.serial_number }}</div>
+    <div>Date: {{ today|date:"d/m/Y" }}</div>
+  </div>
+
+  <div class="details">
+    This is to certify that <strong>{{ profile.student_name }}</strong>, Student of
+    <strong>{{ profile.college }}</strong>, has undergone Summer Internship at
+    <strong>Rolling Stock Workshop, Northern Railway, Charbagh, Lucknow</strong> from
+    <strong>{{ project.start_date|date:"d M, Y" }}</strong> to
+    <strong>{{ project.end_date|date:"d M, Y" }}</strong>. <br><br>
+
+    The title of the project undertaken by the intern is <strong>{{ project.title }}</strong>.<br><br>
+    His / Her performance and conduct during the training was good. We wish him / her success in life.
+  </div>
+
+  <div class="footer">
+    <div class="left">Institute Seal<br><br>Course Coordinator</div>
+    <div class="right">Director</div>
+  </div>
+
+  <div class="seal-note">
+    This Certificate is valid with Institute Seal Only — STC/CB/LKO
+  </div>
+</div>
+
+</body>
+</html>

@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import F
 from django.shortcuts import redirect, render
 
+from .models import Certificate 
 from .forms import RegistrationForm, ProjectRequestForm
 from .models import (
     StudentProfile,
@@ -129,3 +130,30 @@ def view_admit_card(request):
     return render(request, "studentpanel/admit_card.html", context)
 
 
+
+
+# --- 3. New view function in views.py ---
+@login_required
+def view_certificate(request):
+    profile = StudentProfile.objects.filter(user=request.user).first()
+    if not profile:
+        messages.warning(request, "Student profile not found.")
+        return redirect("studentpanel:dashboard")
+
+    project_sel = ProjectSelection.objects.filter(student=profile, status="Approved").first()
+    if not project_sel:
+        messages.warning(request, "Project not found or not approved yet.")
+        return redirect("studentpanel:dashboard")
+
+    project = project_sel.project
+    today = date.today()
+    certificate = Certificate.objects.filter(student=profile).first()
+
+    context = {
+        "profile": profile,
+        "project": project,
+        "today": today,
+        "certificate": certificate,
+        "eligible": today >= project.end_date,
+    }
+    return render(request, "studentpanel/certificate_tab.html", context)

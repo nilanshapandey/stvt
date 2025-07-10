@@ -106,3 +106,16 @@ class IDCard(models.Model):
 
     def __str__(self):
         return f"ID Slip for {self.student.student_name}"
+# models.py
+
+
+
+class Certificate(models.Model):
+    student = models.OneToOneField(StudentProfile, on_delete=models.CASCADE)
+    certificate_pdf = models.FileField(upload_to='certificates/', blank=True, null=True)
+    serial_number = models.CharField(max_length=20, unique=True)
+    is_verified = models.BooleanField(default=False)
+    issued_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Certificate for {self.student.student_name}"

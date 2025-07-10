@@ -1,4 +1,4 @@
-v/
+venv/
 *.pyc
 _pycache_/
 *.vscode/

@@ -12,4 +12,5 @@ urlpatterns = [
     path("logout/",   views.logout_view, name="logout"),
     # ❌ select_project path हटाया गया – अब ज़रूरत नहीं
     path("admit-card/", views.view_admit_card, name="admit_card"),
+     path("certificate/", views.view_certificate, name="certificate"),
 ]
