@@ -1,90 +1,102 @@
-📘 STVT – Summer Training Internship Portal
-A complete web-based system built using Django for managing student summer internships at STC Charbagh, including:
+🎓 STVT – Summer Training Internship Portal
+A responsive and automated web portal built using Django to streamline summer internship registrations, payments, project selections, and certificate issuance for students.
 
-Student registration and login
+🔗 Live Demo / Preview: Coming Soon
 
-LOR upload (optional)
+📄 Overview
+The STVT Portal is a complete training center system that manages:
 
-Fee challan generation and payment verification
+👨‍🎓 Student registration and document submission
 
-Project selection (with seat limits and branch filters)
+💸 Fee challan generation, payment verification
 
-Batch allotment + Admit card generation
+📁 Project selection and batch allotment
 
-Internship certificate verification and issuance
+🎫 Admit card and 🎓 certificate generation
 
-🔧 Features
-🎓 Student Panel
-Registration with photo and academic info
+📬 Email notifications at every important step
 
-Auto-generated unique student ID
+🧰 Technologies Used
+🐍 Python + Django – Backend and admin management
 
-Login and dashboard with multiple tabs
+🖼 HTML + CSS + Bootstrap – Front-end design
 
-Fee challan download and upload
+📨 Django Email Backend – Sending emails (via Gmail SMTP)
 
-Project selection based on branch and slot availability
+🗂 SQLite – Default database (easy setup)
 
-Admit card download (after approval)
+❌ No external PDF libraries used – Certificate and challan are styled HTML files
 
-Certificate tracking and download
+✨ Features
+✅ Student Panel
 
-🛠️ Admin Panel
-Django admin with custom buttons and actions
+Secure login/logout
 
-Approve students and auto-generate Unique ID
+Register with photo, ID, and course details
 
-Generate fee challans and send via email
+View and download challan, admit card, certificate
 
-Verify payment and notify students
+Track training progress through dashboard tabs
 
-Approve projects and generate admit cards
+Receive status emails after admin actions
 
-Verify and send internship certificates (with auto serial number)
+✅ Admin Panel
 
-Filtered certificate tab for all verified and unverified students
+Select students and generate challan automatically
 
-🖥️ Tech Stack
-Backend: Python, Django
+Approve payments and allot projects
 
-Frontend: HTML, CSS (AdminLTE 3), Bootstrap
+Generate admit cards and certificates
 
-Database: SQLite (default), easily replaceable with PostgreSQL/MySQL
+Auto-generate unique ID (STVTxx/yy) and certificate numbers
 
-Email: SMTP (configured for Gmail)
+Filter by status (Pending, Sent, Verified, etc.)
 
-PDF/HTML Document: Custom certificate & challan generation using HTML templates
+✅ Automations
 
-📁 Project Structure
+Email alerts at every important step
+
+Certificate issued only after admin approval
+
+Serial numbers auto-managed
+
+Real-time dashboard updates for students
+
+🎯 Purpose
+This project was created to:
+
+🔧 Automate summer internship training workflows
+
+📤 Reduce manual certificate creation
+
+📨 Integrate email notifications for better tracking
+
+🧪 Practice real-world Django admin customization
+
+💼 Showcase full-stack development & deployment
+
+📂 Project Structure
+<pre> stvt/ ├── studentpanel/ │ ├── templates/studentpanel/ │ │ ├── dashboard.html │ │ ├── admit_card.html │ │ ├── certificate.html │ │ └── ... │ ├── views.py │ ├── models.py │ ├── forms.py │ └── admin.py ├── static/ │ └── images/ # Logos and assets ├── summer_training_portal/ ├── db.sqlite3 └── manage.py </pre>
+💡 Future Improvements
+🎞 Add training session scheduling
+
+📊 Include dashboard analytics for admin
+
+📎 Upload project reports post training
+
+🧾 PDF version of certificate/challan (optional)
+
+🛠 Setup Instructions
 bash
 Copy
 Edit
-stvt/
-├── studentpanel/
-│   ├── templates/studentpanel/
-│   │   ├── dashboard.html
-│   │   ├── challan.html
-│   │   ├── admit_card.html
-│   │   ├── certificate.html
-│   ├── models.py
-│   ├── views.py
-│   ├── forms.py
-│   ├── admin.py
-├── static/
-│   ├── images/  # logo used in certificate/admit
-├── summer_training_portal/
-├── manage.py
-✨ How to Run
-
 # Clone the repo
 git clone https://github.com/your-username/stvt.git
 cd stvt
 
-# Create and activate virtual environment
-python -m venv v
-v\Scripts\activate   # for Windows
-# or
-source v/bin/activate  # for Linux/Mac
+# Create virtual environment
+python -m venv venv
+venv\Scripts\activate  # for Windows
 
 # Install dependencies
 pip install -r requirements.txt
@@ -94,18 +106,11 @@ python manage.py migrate
 
 # Run server
 python manage.py runserver
+📜 License
+This project is open-source and available under the MIT License.
 
-📬 Contact
-Developer: Nilansha Pandey
-Email: nilansha777@gmail.com
-GitHub: github.com/your-username
+🙋‍♀️ Author
+Made with ❤️ by Nilansha Pandey
+🔗 GitHub: @nilanshapandey
+📧 Email: nilansha777@gmail.com
 
-This project was developed as part of a summer training automation system. It includes:
-
-A practical implementation of Django's admin customization
-
-Real-world PDF-like HTML documents for challans and certificates
-
-Auto-generated serial IDs for both students and certificates
-
-Email-based workflow without external file generation tools
