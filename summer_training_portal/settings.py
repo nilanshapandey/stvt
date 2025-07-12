@@ -70,7 +70,7 @@ SECRET_KEY = 'django-insecure-$70+(s1dmxxkal6y_ed5!)28v5h9l^(95(#!7r89epjarc@mcx
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://stvt-master-d86686a.kuberns.cloud']
 
 
 # Application definition
