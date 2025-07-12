@@ -73,16 +73,8 @@ DEBUG = True
 
 # settings.py
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-    'stvt-master-d86686a.kuberns.cloud'
-]
+ALLOWED_HOSTS = []
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://stvt-master-d86686a.kuberns.cloud'
-]
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition
