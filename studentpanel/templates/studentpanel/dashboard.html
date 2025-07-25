@@ -168,50 +168,33 @@
 
      
 <!-- ========== Batch Allotment ========== -->
+
 <div class="tab-pane fade" id="batch">
   {% if not profile.payment_verified %}
-      <div class="alert alert-info mb-3"><i class="fas fa-info-circle mr-1"></i>Project selection becomes available once your payment is verified.</div>
+    <div class="alert alert-info mb-3">Payment not verified.</div>
+
+  {% elif project_req %}
+    <!-- Show project if already selected -->
+   <div class="card mt-4">
+  <div class="card-body">
+    <h5 class="text-success"><strong>Project Already Selected:</strong></h5>
+    <p><strong>Project Name:</strong> {{ project.title }}</p>
+    <p><strong>Project Code:</strong> {{ project.project_code }}</p>
+    <p><strong>Teacher:</strong> {{ project.teacher }}</p>
+    <p><strong>Duration:</strong> {{ project.batch_slot.duration_weeks }} Weeks</p>
+    <p><strong>Dates:</strong> {{ project.batch_slot.start_date|date:"d M Y" }} to {{ project.batch_slot.end_date|date:"d M Y" }}</p>
+  </div>
+</div>
+
   {% else %}
-      {% if project_req %}
-          <div class="alert alert-secondary shadow-sm p-3 mb-3">
-            <i class="fas fa-tasks mr-1"></i>Project requested: <strong>{{ project_req.project.title }}</strong><br>
-            <span>Status: <span class="badge badge-pill badge-primary">{{ project_req.status }}</span></span>
-            <div class="mt-2 text-muted small"><i class="fas fa-info-circle mr-1"></i>You can only request one project at a time. Please wait for admin approval or contact support for changes.</div>
-          </div>
-      {% elif available_projects %}
-          <div class="card card-outline card-primary shadow-sm mb-3">
-            <div class="card-header bg-gradient-primary text-white d-flex align-items-center">
-              <i class="fas fa-list mr-2 fa-lg"></i>
-              <h5 class="card-title mb-0">Select a Project</h5>
-            </div>
-            <div class="card-body">
-              <div class="alert alert-info p-2 mb-3"><i class="fas fa-lightbulb mr-1"></i>Choose your preferred project from the list below. Slots are limited and will be allotted on a first-come, first-served basis.</div>
-              <form method="post" action="?tab=batch">
-                {% csrf_token %}
-                <div class="project-list">
-                  {% for proj in available_projects %}
-                    <div class="form-check mb-2 p-2 border rounded d-flex align-items-center" style="background:#f8f9fa;">
-                      <input class="form-check-input mt-0 mr-2" type="radio" name="project_id" id="p{{ proj.id }}" value="{{ proj.id }}" required>
-                      <label class="form-check-label font-weight-bold w-100" for="p{{ proj.id }}">
-                        <span class="text-primary"><i class="fas fa-project-diagram mr-1"></i>{{ proj.title }}</span>
-                        <span class="ml-2 badge badge-info">{{ proj.duration_weeks }} weeks</span>
-                        <span class="ml-2 badge badge-success">{{ proj.available }} slots left</span>
-                        <span class="d-block text-muted small mt-1"><i class="fas fa-clock mr-1"></i>Apply soon to secure your spot!</span>
-                      </label>
-                    </div>
-                  {% empty %}
-                    <p class="text-muted">No projects currently available.</p>
-                  {% endfor %}
-                </div>
-                <button class="btn btn-primary btn-sm mt-3"><i class="fas fa-paper-plane mr-1"></i>Submit Request</button>
-              </form>
-            </div>
-          </div>
-      {% else %}
-          <div class="alert alert-warning p-3"><i class="fas fa-exclamation-circle mr-1"></i>No projects available for your branch (<strong>{{ profile.branch }}</strong>) right now.</div>
-      {% endif %}
+    <div class="text-center mt-3">
+      <a href="{% url 'studentpanel:batch_allotment' %}" class="btn btn-primary">
+        Start Batch Allotment Wizard
+      </a>
+    </div>
   {% endif %}
 </div>
+
 
 <!-- ========== Admit Card ========== -->
 <div class="tab-pane fade" id="admit">

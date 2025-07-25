@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Certified Students - {{ today }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h2 { text-align: center; margin-bottom: 40px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: auto;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #444;
+      text-align: center;
+    }
+    th { background-color: #eee; }
+    a.button {
+      display: inline-block;
+      padding: 8px 14px;
+      background: #007BFF;
+      color: #fff;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    .download-note {
+      text-align: center;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Certified Students - {{ today }}</h2>
+
+<div class="download-note">
+  👉 Use Ctrl+P or "Print" to save all certificates as PDF
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Student</th>
+      <th>Serial No</th>
+      <th>Issued On</th>
+      <th>Certificate</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for cert in certificates %}
+    <tr>
+      <td>{{ cert.student.student_name }}</td>
+      <td>{{ cert.serial_number }}</td>
+      <td>{{ cert.issued_on|date:"d/m/Y" }}</td>
+      <td>
+        {% if cert.certificate_pdf %}
+          <a href="{{ cert.certificate_pdf.url }}" class="button" target="_blank">Download</a>
+        {% else %}
+          N/A
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+</body>
+</html>

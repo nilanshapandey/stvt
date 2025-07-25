@@ -1,0 +1,24 @@
+{% extends "studentpanel/base.html" %}
+{% block title %}Choose Batch Dates{% endblock %}
+{% block page %}
+<div class="content-wrapper" style="margin-left:0">
+  <section class="content pt-5">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card card-primary">
+            <div class="card-header"><h3 class="card-title mb-0">Choose Batch Dates</h3></div>
+            <form method="post">{% csrf_token %}
+              <div class="card-body">{{ form.batch_slot.label_tag }}{{ form.batch_slot }}</div>
+              <div class="card-footer text-right">
+                <button class="btn btn-primary">Next</button>
+                <a class="btn btn-secondary" href="/dashboard/?tab=batch">Cancel</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

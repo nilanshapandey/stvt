@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Certified Students</title>
+    <style>
+        #downloadBtn {
+            background-color: green;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 20px;
+            margin: 30px auto;
+            display: block;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<button id="downloadBtn" onclick="window.print()">Download All Certificates (Print as PDF)</button>
+
+{% if certificates %}
+    {% for cert in certificates %}
+        {% include "studentpanel/certificate.html" with profile=cert.student project=cert.project certificate=cert today=cert.date %}
+        <div style="page-break-after: always;"></div>
+    {% endfor %}
+{% else %}
+    <h3 style="text-align: center; color: blue;">No verified certificates found.</h3>
+{% endif %}
+
+</body>
+</html>

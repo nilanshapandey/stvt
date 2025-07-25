@@ -1,29 +1,21 @@
-<!-- templates/studentpanel/certificate.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Certificate - {{ profile.student_name }}</title>
+  <title>Certificate - Nilesh</title>
   <style>
     body {
       font-family: 'Times New Roman', serif;
       padding: 40px;
-      background: url('/media/cert_assets/word/media/image1.png') no-repeat center center;
-   
-      background-size: 200px auto;
-      background-repeat: no-repeat;
-      background-position: center top;
+      background: #fdfdfd url('/media/cert_assets/word/media/image2.jpeg') no-repeat center;
+      background-size: contain;
     }
-    
 
     .certificate {
       border: 8px double #000;
-      background-image:url('/media/cert_assets/word/media/image1.png')
-   
       padding: 30px;
       max-width: 900px;
       margin: auto;
-     
       background-color: rgba(255, 255, 255, 0.95);
       position: relative;
     }
@@ -70,12 +62,12 @@
       text-align: center;
     }
 
-   .seal-note {
-  text-align: center;
-  font-size: 14px;
-  margin-top: 40px;
-  color: #000;
-}
+    .seal-note {
+      text-align: center;
+      font-size: 12px;
+      margin-top: 30px;
+      color: #444;
+    }
 
     .meta {
       display: flex;
@@ -98,30 +90,29 @@
   <div class="title">CERTIFICATE</div>
 
   <div class="meta">
-    <div>S. No: {{ certificate.serial_number }}</div>
-    <div>Date: {{ today|date:"d/m/Y" }}</div>
+    <div>S. No: CERT25/01</div>
+    <div>Date: 25/07/2025</div>
   </div>
 
   <div class="details">
-    This is to certify that <strong>{{ profile.student_name }}</strong>, Student of
-    <strong>{{ profile.college }}</strong>, has undergone Summer Internship at
+    This is to certify that <strong>Nilesh</strong>, Student of
+    <strong>Amity University</strong>, has undergone Summer Internship at
     <strong>Rolling Stock Workshop, Northern Railway, Charbagh, Lucknow</strong> from
-    <strong>{{ project.start_date|date:"d M, Y" }}</strong> to
-    <strong>{{ project.end_date|date:"d M, Y" }}</strong>.<br><br>
+    <strong></strong> to
+    <strong></strong>. <br><br>
 
-    The title of the project undertaken by the intern is <strong>{{ project.title }}</strong>.<br><br>
+    The title of the project undertaken by the intern is <strong>Java</strong>.<br><br>
     His / Her performance and conduct during the training was good. We wish him / her success in life.
   </div>
 
-<div class="footer">
-  <div class="left">Course Coordinator</div>
-  <div class="right">Director</div>
-</div>
+  <div class="footer">
+    <div class="left">Institute Seal<br><br>Course Coordinator</div>
+    <div class="right">Director</div>
+  </div>
 
-<div class="seal-note">
-  <img src="/media/cert_assets/word/media/image1.png" style="height: 50px;"><br>
-  <strong> This Certificate Is valid only Institute Seal — STC/CB/LKO</strong>
-</div>
+  <div class="seal-note">
+    This Certificate is valid with Institute Seal Only — STC/CB/LKO
+  </div>
 </div>
 
 </body>
