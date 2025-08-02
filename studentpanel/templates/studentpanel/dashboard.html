@@ -169,22 +169,34 @@
      
 <!-- ========== Batch Allotment ========== -->
 
+<!-- ========== Batch Allotment ========== -->
 <div class="tab-pane fade" id="batch">
-  {% if not profile.payment_verified %}
+  
+  {% if challan and not challan.ticket_number %}
+    <div class="card card-body shadow-sm mb-3">
+      <h5><i class="fas fa-ticket-alt"></i> Enter Your Ticket Number</h5>
+      <form method="POST">
+        {% csrf_token %}
+        {{ ticket_form.ticket_number }}
+        <button type="submit" name="ticket_submit" class="btn btn-primary mt-2">Submit Ticket Number</button>
+      </form>
+    </div>
+
+  {% elif not profile.payment_verified %}
     <div class="alert alert-info mb-3">Payment not verified.</div>
 
   {% elif project_req %}
     <!-- Show project if already selected -->
-   <div class="card mt-4">
-  <div class="card-body">
-    <h5 class="text-success"><strong>Project Already Selected:</strong></h5>
-    <p><strong>Project Name:</strong> {{ project.title }}</p>
-    <p><strong>Project Code:</strong> {{ project.project_code }}</p>
-    <p><strong>Teacher:</strong> {{ project.teacher }}</p>
-    <p><strong>Duration:</strong> {{ project.batch_slot.duration_weeks }} Weeks</p>
-    <p><strong>Dates:</strong> {{ project.batch_slot.start_date|date:"d M Y" }} to {{ project.batch_slot.end_date|date:"d M Y" }}</p>
-  </div>
-</div>
+    <div class="card mt-4">
+      <div class="card-body">
+        <h5 class="text-success"><strong>Project Already Selected:</strong></h5>
+        <p><strong>Project Name:</strong> {{ project.title }}</p>
+        <p><strong>Project Code:</strong> {{ project.project_code }}</p>
+        <p><strong>Teacher:</strong> {{ project.Guide_By }}</p>
+        <p><strong>Duration:</strong> {{ project.batch_slot.duration_weeks }} Weeks</p>
+        <p><strong>Dates:</strong> {{ project.batch_slot.start_date|date:"d M Y" }} to {{ project.batch_slot.end_date|date:"d M Y" }}</p>
+      </div>
+    </div>
 
   {% else %}
     <div class="text-center mt-3">

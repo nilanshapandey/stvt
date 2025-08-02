@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.models import F
 from .models import StudentProfile, Project, BatchSlot
+from .models import FeeChallan
 
 # --------------- Registration Form ----------------
 class RegistrationForm(forms.ModelForm):
@@ -111,7 +112,7 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = [
-            'project_code', 'title', 'teacher',
+            'project_code', 'title', 'Guide_By',
             'branch', 'batch_slot',
             'slots', 'slots_taken'
         ]
@@ -127,3 +128,9 @@ class BatchSlotForm(forms.Form):
         empty_label="Select date range",
         widget=forms.Select(attrs={"class": "form-control"})
     )
+
+# forms.py
+class TicketForm(forms.ModelForm):
+    class Meta:
+        model = FeeChallan
+        fields = ["ticket_number"]

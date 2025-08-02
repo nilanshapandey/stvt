@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.template.loader import render_to_string
 from django.db.models import Count
+from .forms import TicketForm  # ✅ Add this
 from .forms import BatchSlotForm
 from .models import BatchSlot, Certificate 
 from .forms import RegistrationForm, ProjectRequestForm
@@ -54,21 +55,31 @@ def logout_view(request):
 
 
 # ───────────────────────── Dashboard ────────────────────────
+
 @login_required
 def dashboard(request):
-    # 1️⃣  fetch student profile
     profile = StudentProfile.objects.filter(user=request.user).first()
     if not profile:
         messages.warning(request, "Student profile not found. Please register first.")
         return redirect("studentpanel:register")
-    
 
-    # 2️⃣  related objects
-    challan     = FeeChallan.objects.filter(student=profile).first()
+    challan = FeeChallan.objects.filter(student=profile).first()
     project_sel = ProjectSelection.objects.filter(student=profile).first()
-    id_card     = IDCard.objects.filter(student=profile).first()
+    id_card = IDCard.objects.filter(student=profile).first()
 
-    # 3️⃣  handle inline project‑request POST
+    # ✅ Ticket Form Logic
+    ticket_form = None
+    if challan and not challan.ticket_number:
+        ticket_form = TicketForm(instance=challan)
+
+    if request.method == "POST" and "ticket_submit" in request.POST:
+        ticket_form = TicketForm(request.POST, instance=challan)
+        if ticket_form.is_valid():
+            ticket_form.save()
+            messages.success(request, "Ticket number submitted successfully!")
+            return redirect("/dashboard/?tab=batch")
+
+    # ✅ Project Request Logic
     if request.method == "POST" and "project_id" in request.POST and profile.payment_verified:
         form = ProjectRequestForm(profile.branch, request.POST)
         if form.is_valid() and not project_sel:
@@ -79,10 +90,6 @@ def dashboard(request):
             messages.success(request, "Project request submitted. Await admin approval.")
             return redirect("/dashboard/?tab=batch")
 
-    # 4️⃣  helpers for template
-    lor_is_pdf  = bool(profile.lor_file and profile.lor_file.name.lower().endswith(".pdf"))
-    active_tab  = request.GET.get("tab", "profile")
-
     available_projects = None
     if profile.payment_verified and not project_sel:
         available_projects = (
@@ -90,21 +97,26 @@ def dashboard(request):
             .filter(branch=profile.branch)
             .annotate(available=F("slots") - F("slots_taken"))
             .filter(available__gt=0)
-            
         )
 
     context = {
-        "profile":            profile,
-        "challan":            challan,
-        "project_req":        project_sel,
-        "project":            project_sel.project if project_sel else None,
+        "profile": profile,
+        "challan": challan,
+        "ticket_form": ticket_form,  # ✅ Added
+        "project_req": project_sel,
+        "project": project_sel.project if project_sel else None,
         "available_projects": available_projects,
-        "id_card":            id_card,
-        "lor_is_pdf":         lor_is_pdf,
-        "tab":                active_tab,
-        "today":              date.today(),
+        "id_card": id_card,
+        "lor_is_pdf": bool(profile.lor_file and profile.lor_file.name.lower().endswith(".pdf")),
+        "tab": request.GET.get("tab", "profile"),
+        "today": date.today(),
     }
     return render(request, "studentpanel/dashboard.html", context)
+
+
+
+
+#----------------------------
 
 
 @login_required
@@ -154,12 +166,15 @@ def certificate(request):
         return redirect("studentpanel:dashboard")
 
     project = project_sel.project
+    batch_slot = project_sel.batch_slot 
     today = date.today()
     certificate = Certificate.objects.filter(student=profile).first()
 
     context = {
         "profile": profile,
         "project": project,
+        "start_date": batch_slot.start_date if batch_slot else None,
+        "end_date": batch_slot.end_date if batch_slot else None,
         "today": today,
         "certificate": certificate,
     }
@@ -237,3 +252,19 @@ def batch_allotment(request):
         "selected_slot": selected_slot,
         "projects": projects,
     })
+
+@login_required
+def fill_ticket(request):
+    challan = FeeChallan.objects.filter(student__user=request.user).first()
+    if not challan:
+        messages.error(request, "Challan not found.")
+        return redirect("studentpanel:dashboard")
+
+    if request.method == "POST":
+        challan.ticket_number = request.POST.get("ticket_number")
+        challan.status = "Submitted"  # ✅ जैसे ही ticket भरेंगे, Submitted हो जाएगा
+        challan.save()
+        messages.success(request, "Ticket number submitted successfully.")
+        return redirect("studentpanel:dashboard")
+
+    return render(request, "studentpanel/fill_ticket.html", {"challan": challan})

@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Project Batch PDF</title>
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <style>
+    body { background: white; padding: 20px; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; }
+    table, th, td { border: 1px solid black; }
+    th, td { padding: 6px; text-align: left; }
+    .header { text-align: center; font-weight: bold; }
+    .footer-rules { font-size: 13px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+<div class="text-right">
+  <button onclick="window.print()" class="btn btn-danger mb-3">📄 Print / Save as PDF</button>
+</div>
+
+<h5 class="text-center" style="color:red">SSE / {{ project.Guide_By }}</h5>
+<p class="text-center mb-1">
+  <strong>{{ project.project_code }}</strong> – {{ project.title }}
+</p>
+<p class="text-center">
+  <b>Training Dates:</b> {{ project.batch_slot.start_date|date:"d.m.Y" }}
+  to {{ project.batch_slot.end_date|date:"d.m.Y" }}
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>S. No</th>
+      <th>Unique ID</th>
+      <th>Name</th>
+      <th>College</th>
+      <th>Branch</th>
+      <th>Year</th>
+      <th>Course</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in students %}
+    <tr style="color:red">
+      <td>{{ forloop.counter }}</td>
+      <td>{{ s.student.unique_id }}</td>
+      <td>{{ s.student.student_name }}</td>
+      <td>{{ s.student.college }}</td>
+      <td>{{ s.student.branch }}</td>
+      <td>{{ s.student.course|default:"-" }}</td>
+      <td>{{ s.student.course }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="footer-rules">
+  <p><strong>Kindly release him and send his attendance along with the project report.</strong></p>
+  <ol>
+    <li>The trainee will have to follow all rules and maintain discipline...</li>
+    <li>The trainee will not have access to any confidential documents.</li>
+    <li>Camera mobiles are prohibited in the training area...</li>
+    <li>The trainee will have to arrange their own lodging/transportation.</li>
+    <li>No stipend or allowances will be paid...</li>
+    <li>...</li>
+  </ol>
+</div>
+
+<p style="text-align:right"><strong>Course Coordinator,<br>STC/CB/LKO</strong></p>
+
+</body>
+</html>

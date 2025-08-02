@@ -60,7 +60,7 @@ class Project(models.Model):
     project_code = models.CharField(max_length=20)
     title = models.CharField(max_length=200)
     branch = models.CharField(max_length=50)
-    teacher = models.CharField(max_length=100)
+    Guide_By= models.CharField(max_length=100)
     slots = models.PositiveIntegerField()
     slots_taken = models.PositiveIntegerField(default=0)
     batch_slot = models.ForeignKey('BatchSlot', on_delete=models.CASCADE)
@@ -103,6 +103,7 @@ class ProjectSelection(models.Model):
 class FeeChallan(models.Model):
     student        = models.OneToOneField(StudentProfile, on_delete=models.CASCADE)
     challan_pdf    = models.FileField(upload_to="challans/", blank=True, null=True)
+    ticket_number = models.CharField(max_length=50, blank=True, null=True) 
 
     STATUS_CHOICES = [
         ("Pending",   "Pending"),
