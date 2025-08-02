@@ -1,0 +1,11 @@
+{% extends "studentpanel/base.html" %}
+{% block page %}
+<div class="container mt-4">
+  <h3>Enter Your Ticket Number</h3>
+  <form method="POST">
+    {% csrf_token %}
+    <input type="text" name="ticket_number" class="form-control" placeholder="Enter Ticket Number" required>
+    <button type="submit" class="btn btn-success mt-3">Submit</button>
+  </form>
+</div>
+{% endblock %}

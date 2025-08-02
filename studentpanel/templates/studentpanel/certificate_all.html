@@ -1,32 +1,173 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Certified Students</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap and Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
-        #downloadBtn {
-            background-color: green;
+@media print {
+    /* Remove unnecessary elements for print */
+    .page-header,
+    #downloadBtn {
+        display: none !important;
+    }
+
+    /* Ensure the certificates container uses full width in print */
+    .certificates-container {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Each certificate card fits exactly one A4 page */
+    .certificate-card {
+        width: 290mm !important;      /* A4 width */
+        min-height: 297mm !important; /* A4 height */
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        background: white !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        page-break-after: always !important;
+        page-break-inside: avoid !important;
+    }
+
+    /* Inner content adjusts to page size */
+    .certificate-inner {
+        width: 100% !important;
+        padding: 10mm !important;
+        box-sizing: border-box;
+    }
+
+    /* Remove browser default margins and headers/footers */
+    @page {
+        size: A4;
+        margin: 0;
+    }
+}
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f4f6f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: #007bff;
             color: white;
-            padding: 15px 30px;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+            box-shadow: 0px 3px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Floating Download Button */
+        #downloadBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 14px 22px;
             border: none;
-            border-radius: 6px;
-            font-size: 20px;
-            margin: 30px auto;
-            display: block;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 500;
             cursor: pointer;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+        #downloadBtn:hover {
+            background: #218838;
+        }
+
+        /* Certificates Vertical Layout */
+        .certificates-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        /* Certificate Card (One Below the Other) */
+        .certificate-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .certificate-card:hover {
+            transform: scale(1.01);
+            box-shadow: 0px 6px 14px rgba(0,0,0,0.2);
+        }
+
+        .certificate-inner {
+            width: 100%;
+            background: white;
+        }
+
+        /* Print Styling */
+        @media print {
+            body {
+                background: white !important;
+            }
+            .page-header, #downloadBtn {
+                display: none !important;
+            }
+            .certificates-container {
+                gap: 0 !important;
+                padding: 0 !important;
+            }
+            .certificate-card {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                margin-bottom: 0 !important;
+                page-break-after: always;
+            }
         }
     </style>
 </head>
 <body>
 
-<button id="downloadBtn" onclick="window.print()">Download All Certificates (Print as PDF)</button>
+
+
+<button id="downloadBtn" onclick="window.print()">
+    <i class="fas fa-download"></i> Download All Certificates (PDF)
+</button>
 
 {% if certificates %}
+<div class="certificates-container">
     {% for cert in certificates %}
-        {% include "studentpanel/certificate.html" with profile=cert.student project=cert.project certificate=cert today=cert.date %}
-        <div style="page-break-after: always;"></div>
+    <div class="certificate-card">
+        <div class="certificate-inner">
+            {% include "studentpanel/certificate.html" with profile=cert.student project=cert.project certificate=cert today=cert.date %}
+        </div>
+    </div>
     {% endfor %}
+</div>
 {% else %}
-    <h3 style="text-align: center; color: blue;">No verified certificates found.</h3>
+<h3 class="text-center text-primary mt-4">No verified certificates found.</h3>
 {% endif %}
 
 </body>
