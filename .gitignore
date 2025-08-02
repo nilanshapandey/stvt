@@ -1,4 +1,19 @@
+# Ignore virtual environment folder
 v/
+
+# Ignore Python cache files
+__pycache__/
 *.pyc
-_pycache_/
-*.vscode/
+*.pyo
+*.pyd
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+
+# Ignore media uploads (can be large)
+media/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
