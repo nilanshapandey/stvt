@@ -1,4 +1,3 @@
-<!-- templates/studentpanel/certificate.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,18 +30,17 @@
       border-radius: 15px;
     }
 
-    /* ✅ Watermark in the center */
     .certificate::before {
       content: "";
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 500px;   /* Adjust size */
-      height: 500px;  /* Adjust size */
+      width: 500px;
+      height: 500px;
       transform: translate(-50%, -50%);
       background: url("/media/cert_assets/word/media/image1.png") no-repeat center;
       background-size: contain;
-      opacity: 0.1; /* Light watermark */
+      opacity: 0.08;
       z-index: 0;
       pointer-events: none;
     }
@@ -86,31 +84,6 @@
       color: #2c3e50;
     }
 
-    .footer {
-      margin-top: 70px;
-      display: flex;
-      justify-content: space-between;
-      font-weight: 700;
-      color: #2c3e50;
-    }
-
-    .footer .left,
-    .footer .right {
-      width: 40%;
-      text-align: center;
-    }
-
-    .seal-note {
-      text-align: center;
-      font-size: 16px;
-      margin-top: 50px;
-      color: #2c3e50;
-    }
-
-    .seal-note img {
-      height: 60px;
-    }
-
     .meta {
       display: flex;
       justify-content: space-between;
@@ -120,40 +93,45 @@
       font-weight: 600;
     }
 
+    .footer {
+      margin-top: 50px;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      color: #2c3e50;
+    }
+
+    .footer .right {
+      text-align: right;
+    }
+
+    .footer .right small {
+      display: block;
+      font-weight: 600;
+      font-size: 14px;
+      margin-top: 3px;
+    }
+
+    .seal-note {
+      text-align: right;
+      font-size: 14px;
+      margin-top: 25px;
+      color: #2c3e50;
+      font-style: italic;
+    }
+
     @media (max-width: 600px) {
       .certificate {
         padding: 30px 20px;
       }
 
-      .header {
-        font-size: 20px;
-      }
+      .header { font-size: 20px; }
+      .title { font-size: 28px; }
+      .details { font-size: 16px; margin: 0 10px; }
 
-      .title {
-        font-size: 28px;
-      }
-
-      .details {
-        font-size: 16px;
-        margin: 0 10px;
-      }
-
-      .footer {
-        flex-direction: column;
-        gap: 20px;
-      }
-
-      .footer .left,
-      .footer .right {
-        width: 100%;
-        text-align: center;
-      }
-
-      .meta {
-        flex-direction: column;
-        gap: 5px;
-        font-size: 16px;
-      }
+      .meta { flex-direction: column; gap: 5px; font-size: 16px; }
+      .footer { flex-direction: column; text-align: center; }
+      .seal-note { text-align: center; }
     }
   </style>
 </head>
@@ -177,8 +155,8 @@
     This is to certify that <strong>{{ profile.student_name }}</strong>, Student of
     <strong>{{ profile.college }}</strong>, has undergone Summer Internship at
     <strong>Rolling Stock Workshop, Northern Railway, Charbagh, Lucknow</strong> from
-    <strong>{{ project.start_date|date:"d M, Y" }}</strong> to
-    <strong>{{ project.end_date|date:"d M, Y" }}</strong>.<br><br>
+    <strong>{{ start_date|date:"d M, Y" }}</strong> to
+    <strong>{{ end_date|date:"d M, Y" }}</strong>.<br><br>
 
     The title of the project undertaken by the intern is <strong>{{ project.title }}</strong>.<br><br>
     His / Her performance and conduct during the training was good. We wish him / her success in life.
@@ -186,15 +164,13 @@
 
   <div class="footer">
     <div class="left">Training Incharge</div>
-    <div class="right">Director
-    <br/><h6>STC/CB/LKO</h6>
+    <div class="right">
+      Director
+      <small>STC/CB/LKO</small>
     </div>
   </div>
 
-  <div class="seal-note">
-    
-    <strong>This Certificate is valid only with Institute Seal </strong>
-  </div>
+  <div class="seal-note"><strong>Valid only with Institute Seal</strong></div>
 </div>
 
 </body>

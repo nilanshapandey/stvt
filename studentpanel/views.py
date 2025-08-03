@@ -152,7 +152,6 @@ def admit_card(request):
 
 
 # --- 3. New view function in views.py ---
-
 @login_required
 def certificate(request):
     profile = StudentProfile.objects.filter(user=request.user).first()
@@ -160,14 +159,18 @@ def certificate(request):
         messages.warning(request, "Student profile not found.")
         return redirect("studentpanel:dashboard")
 
-    project_sel = ProjectSelection.objects.filter(student=profile, status="Approved").first()
+    # ✅ Get approved project selection with related project & batch_slot
+    project_sel = ProjectSelection.objects.filter(student=profile, status="Approved").select_related(
+        "project__batch_slot"
+    ).first()
+
     if not project_sel:
         messages.warning(request, "Project not found or not approved yet.")
         return redirect("studentpanel:dashboard")
 
     project = project_sel.project
-    batch_slot = project_sel.batch_slot 
-    today = date.today()
+    batch_slot = project.batch_slot  # ✅ Take batch slot from project
+
     certificate = Certificate.objects.filter(student=profile).first()
 
     context = {
@@ -175,7 +178,7 @@ def certificate(request):
         "project": project,
         "start_date": batch_slot.start_date if batch_slot else None,
         "end_date": batch_slot.end_date if batch_slot else None,
-        "today": today,
+        "today": date.today(),
         "certificate": certificate,
     }
     return render(request, "studentpanel/certificate_tab.html", context)
