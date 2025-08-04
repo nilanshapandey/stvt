@@ -12,48 +12,21 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
-    body {
-      background: #f4f6f9;
-    }
-    .card {
-      border-radius: 12px;
-      overflow: hidden;
-    }
+    body { background: #f4f6f9; }
+    .card { border-radius: 12px; overflow: hidden; }
     .card-header {
-      font-size: 1.3rem;
-      font-weight: 600;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
+      font-size: 1.3rem; font-weight: 600;
+      display: flex; justify-content: center; align-items: center; gap: 10px;
     }
-    .btn-outline-primary {
-      border-radius: 8px;
-      font-weight: 500;
-    }
+    .btn-outline-primary { border-radius: 8px; font-weight: 500; }
     .table thead th {
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      background: #007bff;
-      color: #fff;
-      font-weight: 600;
-      font-size: 14px;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      background: #007bff; color: #fff;
+      font-weight: 600; font-size: 14px;
     }
-    .table tbody td {
-      vertical-align: middle;
-      font-size: 15px;
-    }
-    .btn-success {
-      font-size: 13px;
-      border-radius: 6px;
-      font-weight: 500;
-    }
-    .footer-note {
-      text-align: center;
-      margin-top: 15px;
-      color: #666;
-      font-size: 14px;
-    }
+    .table tbody td { vertical-align: middle; font-size: 15px; }
+    .btn-success { font-size: 13px; border-radius: 6px; font-weight: 500; }
+    .footer-note { text-align: center; margin-top: 15px; color: #666; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -63,57 +36,86 @@
     <div class="card-header bg-primary text-white">
       <i class="fas fa-graduation-cap"></i> Certified Students List
     </div>
-    <div class="card-body text-center">
-    
 
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>ID</th>
-              <th>Serial</th>
-              <th>Date</th>
-              <th>Certificate</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for cert in certified %}
-            <tr>
-              <td><i class="fas fa-user-circle text-primary"></i> {{ cert.student.student_name }}</td>
-              <td>{{ cert.student.unique_id }}</td>
-              <td>{{ cert.serial_number }}</td>
-              <td>{{ cert.issued_on|date:"d-m-Y" }}</td>
-              <td>
-                {% if cert.certificate_pdf %}
-                  <a href="{{ cert.certificate_pdf.url }}" target="_blank" class="btn btn-success btn-sm">
-                    <i class="fas fa-download"></i> Download
-                  </a>
-                {% else %}
-                  <span class="text-muted">N/A</span>
-                {% endif %}
-              </td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="5" class="text-center text-muted">No certified students found</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+    <div class="card-body text-center">
+
+      <!-- ✅ Added Form for Selecting Students -->
+      <form id="cert-form" method="post" action="{% url 'studentpanel:download_selected_certificates' %}" target="_blank">
+        {% csrf_token %}
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="select-all"></th>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Serial</th>
+                <th>Date</th>
+                <th>Certificate</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for cert in certified %}
+              <tr>
+                <td><input type="checkbox" name="selected_ids" value="{{ cert.id }}"></td>
+                <td><i class="fas fa-user-circle text-primary"></i> {{ cert.student.student_name }}</td>
+                <td>{{ cert.student.unique_id }}</td>
+                <td>{{ cert.serial_number }}</td>
+                <td>{{ cert.issued_on|date:"d-m-Y" }}</td>
+                <td>
+                  {% if cert.certificate_pdf %}
+                    <a href="{{ cert.certificate_pdf.url }}" target="_blank" class="btn btn-success btn-sm">
+                      <i class="fas fa-download"></i> Download
+                    </a>
+                  {% else %}
+                    <span class="text-muted">N/A</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="6" class="text-center text-muted">No certified students found</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ✅ Download Selected Button -->
+        <button type="button" class="btn btn-primary mt-3" onclick="submitSelected()">
+          <i class="fas fa-file-download"></i> Download Selected Certificates
+        </button>
+      </form>
+
     </div>
   </div>
 
   <div class="footer-note">
     <a href="view_all/" target="_blank" class="btn btn-outline-primary mb-3">
-        <i class="fas fa-eye"></i> View All Certificates
-      </a>
-
+      <i class="fas fa-eye"></i> View All Certificates
+    </a>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+<script>
+  // ✅ Select All Checkboxes
+  document.getElementById("select-all").addEventListener("change", function () {
+    document.querySelectorAll('input[name="selected_ids"]').forEach(cb => cb.checked = this.checked);
+  });
+
+  // ✅ Validate before submit
+  function submitSelected() {
+    const selected = document.querySelectorAll('input[name="selected_ids"]:checked');
+    if (selected.length === 0) {
+      alert("⚠ Please select at least one student to download certificates.");
+      return;
+    }
+    document.getElementById("cert-form").submit();
+  }
+</script>
+
 </body>
 </html>

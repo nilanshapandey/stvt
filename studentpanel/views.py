@@ -210,7 +210,7 @@ def batch_allotment(request):
     profile = StudentProfile.objects.get(user=request.user)
     batch_slots = BatchSlot.objects.all().order_by("start_date")
 
-    # If project already selected, show message only (no form)
+    # ✅ If already selected, just show message
     already_selected = ProjectSelection.objects.filter(student=profile).first()
     if already_selected:
         return render(request, "studentpanel/select_project.html", {
@@ -220,14 +220,15 @@ def batch_allotment(request):
         })
 
     selected_slot = None
-    projects = []
+    available_projects = []  # ✅ correct variable
 
     if request.method == "POST":
         slot_id = request.POST.get("batch_slot")
         if slot_id:
             selected_slot = BatchSlot.objects.filter(id=slot_id).first()
+            print("✅ Selected Slot:", selected_slot)
 
-        # If project selection step
+        # ✅ If user selected a project
         if "project_id" in request.POST:
             project_id = request.POST.get("project_id")
             if project_id:
@@ -238,23 +239,26 @@ def batch_allotment(request):
                     ProjectSelection.objects.create(student=profile, project=project, status="Pending")
                     project.slots_taken = F("slots_taken") + 1
                     project.save(update_fields=["slots_taken"])
-                    messages.success(request, "Project request submitted successfully!")
+                    messages.success(request, "✅ Project request submitted successfully!")
                     return redirect("/dashboard/?tab=batch")
 
-        # Only fetch projects if slot is selected but no project yet
+        # ✅ Fetch projects only when slot selected
         if selected_slot:
-            projects = (
+            available_projects = (
                 Project.objects
                 .filter(batch_slot=selected_slot, branch=profile.branch)
                 .annotate(available=F("slots") - F("slots_taken"))
+                .filter(available__gt=0)
                 .order_by("project_code")
             )
+            print("✅ Projects Found:", available_projects.count())
 
     return render(request, "studentpanel/select_project.html", {
         "batch_slots": batch_slots,
         "selected_slot": selected_slot,
-        "projects": projects,
+        "projects": available_projects,  # ✅ correct variable pass
     })
+
 
 @login_required
 def fill_ticket(request):
@@ -271,3 +275,21 @@ def fill_ticket(request):
         return redirect("studentpanel:dashboard")
 
     return render(request, "studentpanel/fill_ticket.html", {"challan": challan})
+
+
+
+
+@login_required
+def download_selected_certificates(request):
+    if request.method == "POST":
+        selected_ids = request.POST.getlist("selected_ids")
+
+        if not selected_ids:
+            messages.warning(request, "No students selected!")
+            return redirect(request.META.get("HTTP_REFERER", "/"))
+
+        certificates = Certificate.objects.filter(pk__in=selected_ids).select_related("student")
+
+        return render(request, "studentpanel/selected_certificates_print.html", {
+            "certificates": certificates
+        })
