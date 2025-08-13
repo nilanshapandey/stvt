@@ -9,7 +9,7 @@ from django.shortcuts import redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import path, reverse
 from django.utils.html import format_html
-
+#from .models import CertificateSettings
 from studentpanel.views import view_all_certificates
 from .models import (
     StudentProfile, FeeChallan, Project, ProjectSelection,
@@ -245,6 +245,18 @@ class ProjectSelectionAdmin(admin.ModelAdmin):
         self.message_user(request, "Admit card sent.", level=messages.SUCCESS)
         return redirect("..")
 
+from django.contrib import admin, messages
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import path, reverse
+from django.utils.html import format_html
+from django.template.loader import render_to_string
+from django.core.files.base import ContentFile
+from django.core.mail import send_mail
+from datetime import date
+from django.conf import settings
+
+from .models import Certificate, ProjectSelection
+
 
 # ---------- Certificate ----------
 @admin.register(Certificate)
@@ -253,6 +265,19 @@ class CertificateAdmin(admin.ModelAdmin):
     list_filter = ("is_verified",)
     readonly_fields = ("issued_on",)
     change_list_template = "admin/cert_change_list.html"
+
+    # Fields shown in the admin form
+    fieldsets = (
+        ("Certificate Info", {
+            "fields": ("student", "serial_number", "is_verified", "issued_on")
+        }),
+        ("Training Incharge", {
+            "fields": ("training_incharge_name", "training_incharge_signature")
+        }),
+        ("Director", {
+            "fields": ("director_name", "director_signature")
+        }),
+    )
 
     def get_urls(self):
         base = super().get_urls()
@@ -278,6 +303,7 @@ class CertificateAdmin(admin.ModelAdmin):
         profile = cert.student
         project = ProjectSelection.objects.get(student=profile).project
 
+        # Render certificate HTML with dynamic signatures/names
         html = render_to_string("studentpanel/certificate.html", {
             "profile": profile,
             "project": project,
@@ -300,7 +326,12 @@ class CertificateAdmin(admin.ModelAdmin):
         self.message_user(request, "Certificate verified and sent.", level=messages.SUCCESS)
         return redirect("..")
 
+
     def _certified_students(self, request):
         certified = Certificate.objects.filter(is_verified=True).select_related('student')
         html = render_to_string("studentpanel/certificate_students.html", {"certified": certified})
         return HttpResponse(html)
+
+'''@admin.register(CertificateSettings)
+class CertificateSettingsAdmin(admin.ModelAdmin):
+    list_display = ('training_incharge_name', 'director_name')'''

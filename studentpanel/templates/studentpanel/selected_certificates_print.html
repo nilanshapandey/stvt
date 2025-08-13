@@ -19,7 +19,7 @@
   </button>
 </div>
 
-<form id="cert-form" method="post" action="{% url 'studentpanel:download_selected_certificates' %}" target="_blank">
+<form id="cert-form" method="post" action="{% url 'studentpanel:Certificate.html' %}">
   {% csrf_token %}
   {% for cert in certificates %}
     <div class="certificate-page">

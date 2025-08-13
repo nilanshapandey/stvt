@@ -159,31 +159,33 @@ def certificate(request):
         messages.warning(request, "Student profile not found.")
         return redirect("studentpanel:dashboard")
 
-    # ✅ Get approved project selection with related project & batch_slot
-    project_sel = ProjectSelection.objects.filter(student=profile, status="Approved").select_related(
-        "project__batch_slot"
-    ).first()
+    # Get approved project with batch slot
+    project_sel = ProjectSelection.objects.filter(
+        student=profile, status="Approved"
+    ).select_related("project__batch_slot").first()
 
     if not project_sel:
         messages.warning(request, "Project not found or not approved yet.")
         return redirect("studentpanel:dashboard")
 
     project = project_sel.project
-    batch_slot = project.batch_slot  # ✅ Take batch slot from project
+    batch_slot = project.batch_slot
 
+    # Get certificate record
     certificate = Certificate.objects.filter(student=profile).first()
 
+    # Prepare context
     context = {
         "profile": profile,
         "project": project,
         "start_date": batch_slot.start_date if batch_slot else None,
         "end_date": batch_slot.end_date if batch_slot else None,
         "today": date.today(),
+        "issue_date": batch_slot.start_date if batch_slot else date.today(),  # ✅ certificate date
         "certificate": certificate,
+        "photo_url": profile.photo.url if profile.photo else None,  # ✅ student photo
     }
-    return render(request, "studentpanel/certificate_tab.html", context)
-
-
+    return render(request, "studentpanel/certificate.html", context)
 # ✅ Admin view: All Verified Certificates
 
 def view_all_certificates(request):

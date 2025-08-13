@@ -142,8 +142,29 @@ class Certificate(models.Model):
     is_verified = models.BooleanField(default=False)
     issued_on = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Certificate for {self.student.student_name}"
+  # Training Incharge info
+    training_incharge_name = models.CharField(max_length=100, blank=True, null=True)
+    training_incharge_signature = models.ImageField(upload_to='signatures/', blank=True, null=True)
+
+    # Director info
+    director_name = models.CharField(max_length=100, blank=True, null=True)
+    director_signature = models.ImageField(upload_to='signatures/', blank=True, null=True)
+
+    
+
+
+def __str__(self):
+    return f"{self.student_name} ({self.serial_number})"
 
 
 temp_dummy = models.CharField(max_length=10, null=True, blank=True)
+
+
+'''class CertificateSettings(models.Model):
+    training_incharge_name = models.CharField(max_length=100)
+    training_incharge_signature = models.ImageField(upload_to='signatures/', blank=True, null=True)
+    director_name = models.CharField(max_length=100)
+    director_signature = models.ImageField(upload_to='signatures/', blank=True, null=True)
+
+    def __str__(self):
+        return "Certificate Settings"'''
