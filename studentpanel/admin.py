@@ -245,17 +245,7 @@ class ProjectSelectionAdmin(admin.ModelAdmin):
         self.message_user(request, "Admit card sent.", level=messages.SUCCESS)
         return redirect("..")
 
-from django.contrib import admin, messages
-from django.shortcuts import get_object_or_404, redirect
-from django.urls import path, reverse
-from django.utils.html import format_html
-from django.template.loader import render_to_string
-from django.core.files.base import ContentFile
-from django.core.mail import send_mail
-from datetime import date
-from django.conf import settings
 
-from .models import Certificate, ProjectSelection
 
 
 # ---------- Certificate ----------
