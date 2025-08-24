@@ -177,6 +177,7 @@ temp_dummy = models.CharField(max_length=10, null=True, blank=True)
 
     def __str__(self):
         return "Certificate Settings"'''
+        
 # ───────────────────────────────
 # Project Incharge (Training Authority)
 # ───────────────────────────────
@@ -193,7 +194,7 @@ class ProjectIncharge(models.Model):
 # ───────────────────────────────
 class Director(models.Model):
     name = models.CharField(max_length=100)
-    signature = models.ImageField(upload_to="signatures/director/")
+    signature = models.ImageField(upload_to="directors/signatures/",blank=True, null=True)
 
     class Meta:
         verbose_name = "Director"

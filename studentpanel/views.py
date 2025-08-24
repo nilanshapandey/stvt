@@ -22,6 +22,9 @@ from .models import (
     ProjectIncharge,
     Director,   # ✅ Added
 )
+    # Get director info
+
+director = Director.objects.first()
 
 # ───────────────────────── Register ─────────────────────────
 def register(request):
@@ -115,34 +118,6 @@ def dashboard(request):
     return render(request, "studentpanel/dashboard.html", context)
 
 
-# ───────────────────────── Admit Card ───────────────────────
-@login_required
-def admit_card(request):
-    profile = StudentProfile.objects.filter(user=request.user).first()
-    if not profile:
-        messages.warning(request, "Profile not found.")
-        return redirect("studentpanel:dashboard")
-
-    psel = (
-        ProjectSelection.objects
-        .filter(student=profile, status="Approved")
-        .select_related("project")
-        .first()
-    )
-    if not psel:
-        messages.warning(request, "Project not approved yet.")
-        return redirect("studentpanel:dashboard")
-
-    # Get director info
-    from studentpanel.models import Director
-    director = Director.objects.first()
-
-    context = {
-        "profile": profile,
-        "project": psel.project,
-        "director": director,
-    }
-    return render(request, "studentpanel/admit_card.html", context)
 
 
 # ───────────────────────── Certificate ──────────────────────
@@ -276,6 +251,8 @@ def download_selected_certificates(request):
         })
 
 
+# ───────────────────────── Challan View ───────────────────────
+# ───────────────────────── Challan View ───────────────────────
 @login_required
 def challan_view(request):
     profile = StudentProfile.objects.filter(user=request.user).first()
@@ -284,13 +261,42 @@ def challan_view(request):
         return redirect("studentpanel:register")
 
     challan = FeeChallan.objects.filter(student=profile).first()
-    director = Director.objects.first()
+    if not challan:
+        messages.warning(request, "Fee Challan not generated yet.")
+        return redirect("studentpanel:dashboard")
+
 
     context = {
-        "student_name": profile.student_name if profile else "",
-        "unique_id": profile.unique_id if profile else "",
-        "date": date.today().strftime("%d-%m-%Y"),
+        "profile": profile,
         "challan": challan,
-        "director": director,
+        "director": director,   # ab template me use kar sakte ho
+        "date": date.today().strftime("%d-%m-%Y"),
     }
     return render(request, "studentpanel/challan.html", context)
+
+# ───────────────────────── Admit Card ───────────────────────
+@login_required
+def admit_card(request):
+    profile = StudentProfile.objects.filter(user=request.user).first()
+    if not profile:
+        messages.warning(request, "Profile not found.")
+        return redirect("studentpanel:dashboard")
+
+    psel = (
+        ProjectSelection.objects
+        .filter(student=profile, status="Approved")
+        .select_related("project")
+        .first()
+    )
+    if not psel:
+        messages.warning(request, "Project not approved yet.")
+        return redirect("studentpanel:dashboard")
+
+
+
+    context = {
+        "profile": profile,
+        "project": psel.project,
+        "director": director,
+    }
+    return render(request, "studentpanel/admit_card.html", context)
