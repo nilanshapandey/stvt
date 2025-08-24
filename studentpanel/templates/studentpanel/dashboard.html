@@ -192,7 +192,7 @@
         <h5 class="text-success"><strong>Project Already Selected:</strong></h5>
         <p><strong>Project Name:</strong> {{ project.title }}</p>
         <p><strong>Project Code:</strong> {{ project.project_code }}</p>
-        <p><strong>Teacher:</strong> {{ project.Guide_By }}</p>
+        <p><strong>Project Incharge:</strong> {{ project.incharge }}</p>
         <p><strong>Duration:</strong> {{ project.batch_slot.duration_weeks }} Weeks</p>
         <p><strong>Dates:</strong> {{ project.batch_slot.start_date|date:"d M Y" }} to {{ project.batch_slot.end_date|date:"d M Y" }}</p>
       </div>
@@ -232,7 +232,27 @@
   </div>
 </div>
 
-
+<!-- ========== Certificate ========== -->
+<div class="tab-pane fade" id="certificate">
+  <div class="card card-outline card-info shadow-sm">
+    <div class="card-header bg-gradient-info text-white d-flex align-items-center">
+      <i class="fas fa-certificate mr-2 fa-lg"></i>
+      <h4 class="card-title mb-0">Certificate</h4>
+    </div>
+    <div class="card-body">
+      <p class="mb-2"><i class="fas fa-info-circle mr-1"></i>Your certificate will be available for download once issued and verified by admin.</p>
+      {% if certificate and certificate.certificate_pdf %}
+        <a class="btn btn-primary btn-sm font-weight-bold" target="_blank" href="{{ certificate.certificate_pdf.url }}">
+          <i class="fas fa-download mr-1"></i>Download Certificate
+        </a>
+      {% elif certificate %}
+        <div class="alert alert-warning mb-0"><i class="fas fa-exclamation-circle mr-1"></i>Certificate is not yet issued or verified.</div>
+      {% else %}
+        <div class="alert alert-secondary mb-0"><i class="fas fa-info-circle mr-1"></i>Certificate will be available after completion and admin verification.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
 
       </div>
     </div>

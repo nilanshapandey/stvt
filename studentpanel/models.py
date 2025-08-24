@@ -60,7 +60,16 @@ class Project(models.Model):
     project_code = models.CharField(max_length=20)
     title = models.CharField(max_length=200)
     branch = models.CharField(max_length=50)
-    Guide_By= models.CharField(max_length=100)
+    concerd_shop = models.CharField(max_length=100, blank=True, null=True, help_text="Enter Concerd Shop name")
+    # ✅ New: link Project to ProjectIncharge
+    incharge = models.ForeignKey(
+        "ProjectIncharge",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="projects"
+    )
+
     slots = models.PositiveIntegerField()
     slots_taken = models.PositiveIntegerField(default=0)
     batch_slot = models.ForeignKey('BatchSlot', on_delete=models.CASCADE)
@@ -143,12 +152,12 @@ class Certificate(models.Model):
     issued_on = models.DateTimeField(auto_now_add=True)
 
   # Training Incharge info
-    training_incharge_name = models.CharField(max_length=100, blank=True, null=True)
-    training_incharge_signature = models.ImageField(upload_to='signatures/', blank=True, null=True)
+    # training_incharge_name = models.CharField(max_length=100, blank=True, null=True)
+    # training_incharge_signature = models.ImageField(upload_to='signatures/', blank=True, null=True)
 
-    # Director info
-    director_name = models.CharField(max_length=100, blank=True, null=True)
-    director_signature = models.ImageField(upload_to='signatures/', blank=True, null=True)
+    # # Director info
+    # director_name = models.CharField(max_length=100, blank=True, null=True)
+    # director_signature = models.ImageField(upload_to='signatures/', blank=True, null=True)
 
     
 
@@ -168,3 +177,27 @@ temp_dummy = models.CharField(max_length=10, null=True, blank=True)
 
     def __str__(self):
         return "Certificate Settings"'''
+# ───────────────────────────────
+# Project Incharge (Training Authority)
+# ───────────────────────────────
+class ProjectIncharge(models.Model):
+    name = models.CharField(max_length=100)
+    signature = models.ImageField(upload_to="signatures/incharge/")
+
+    def __str__(self):
+        return self.name
+
+
+# ───────────────────────────────
+# Director (Singleton)
+# ───────────────────────────────
+class Director(models.Model):
+    name = models.CharField(max_length=100)
+    signature = models.ImageField(upload_to="signatures/director/")
+
+    class Meta:
+        verbose_name = "Director"
+        verbose_name_plural = "Director"
+
+    def __str__(self):
+        return self.name

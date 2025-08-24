@@ -24,5 +24,7 @@ urlpatterns = [
     path('admin/studentpanel/certificates/view_all/', views.view_all_certificates, name='view_all_certificates'),
     path("certificates/download-selected/", views.download_selected_certificates, name="download_selected_certificates"),
 
+    # Challan view
+    path('challan/', views.challan_view, name='challan'),
 
 ]

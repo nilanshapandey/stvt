@@ -1,4 +1,4 @@
-# studentpanel/views.py  ◆◆ copy‑paste everything ◆◆
+# studentpanel/views.py  ◆◆ copy-paste everything ◆◆
 from datetime import date
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -9,16 +9,18 @@ from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.template.loader import render_to_string
 from django.db.models import Count
-from .forms import TicketForm  # ✅ Add this
-from .forms import BatchSlotForm
-from .models import BatchSlot, Certificate 
-from .forms import RegistrationForm, ProjectRequestForm
+
+from .forms import TicketForm, BatchSlotForm, RegistrationForm, ProjectRequestForm
 from .models import (
     StudentProfile,
     FeeChallan,
     ProjectSelection,
     IDCard,
     Project,
+    BatchSlot,
+    Certificate,
+    ProjectIncharge,
+    Director,   # ✅ Added
 )
 
 # ───────────────────────── Register ─────────────────────────
@@ -55,7 +57,6 @@ def logout_view(request):
 
 
 # ───────────────────────── Dashboard ────────────────────────
-
 @login_required
 def dashboard(request):
     profile = StudentProfile.objects.filter(user=request.user).first()
@@ -102,7 +103,7 @@ def dashboard(request):
     context = {
         "profile": profile,
         "challan": challan,
-        "ticket_form": ticket_form,  # ✅ Added
+        "ticket_form": ticket_form,
         "project_req": project_sel,
         "project": project_sel.project if project_sel else None,
         "available_projects": available_projects,
@@ -114,24 +115,14 @@ def dashboard(request):
     return render(request, "studentpanel/dashboard.html", context)
 
 
-
-
-#----------------------------
-
-
+# ───────────────────────── Admit Card ───────────────────────
 @login_required
 def admit_card(request):
-    """
-    Renders a REAL‑TIME admit card for the logged‑in student.
-    It uses exactly the same context (`profile`, `project`) that the
-    admin action used when it created the file.
-    """
     profile = StudentProfile.objects.filter(user=request.user).first()
     if not profile:
         messages.warning(request, "Profile not found.")
         return redirect("studentpanel:dashboard")
 
-    # The student's approved project (if any)
     psel = (
         ProjectSelection.objects
         .filter(student=profile, status="Approved")
@@ -142,16 +133,19 @@ def admit_card(request):
         messages.warning(request, "Project not approved yet.")
         return redirect("studentpanel:dashboard")
 
+    # Get director info
+    from studentpanel.models import Director
+    director = Director.objects.first()
+
     context = {
         "profile": profile,
         "project": psel.project,
+        "director": director,
     }
     return render(request, "studentpanel/admit_card.html", context)
 
 
-
-
-# --- 3. New view function in views.py ---
+# ───────────────────────── Certificate ──────────────────────
 @login_required
 def certificate(request):
     profile = StudentProfile.objects.filter(user=request.user).first()
@@ -159,10 +153,9 @@ def certificate(request):
         messages.warning(request, "Student profile not found.")
         return redirect("studentpanel:dashboard")
 
-    # Get approved project with batch slot
     project_sel = ProjectSelection.objects.filter(
         student=profile, status="Approved"
-    ).select_related("project__batch_slot").first()
+    ).select_related("project__batch_slot", "project__incharge").first()
 
     if not project_sel:
         messages.warning(request, "Project not found or not approved yet.")
@@ -170,24 +163,27 @@ def certificate(request):
 
     project = project_sel.project
     batch_slot = project.batch_slot
-
-    # Get certificate record
     certificate = Certificate.objects.filter(student=profile).first()
 
-    # Prepare context
+    # ✅ Universal Director
+    director = Director.objects.first()
+
     context = {
         "profile": profile,
         "project": project,
+        "incharge": project.incharge,
+        "director": director,
         "start_date": batch_slot.start_date if batch_slot else None,
         "end_date": batch_slot.end_date if batch_slot else None,
         "today": date.today(),
-        "issue_date": batch_slot.start_date if batch_slot else date.today(),  # ✅ certificate date
+        "issue_date": batch_slot.start_date if batch_slot else date.today(),
         "certificate": certificate,
-        "photo_url": profile.photo.url if profile.photo else None,  # ✅ student photo
+        "photo_url": profile.photo.url if profile.photo else None,
     }
     return render(request, "studentpanel/certificate.html", context)
-# ✅ Admin view: All Verified Certificates
 
+
+# ───────── Admin: All Verified Certificates ─────────
 def view_all_certificates(request):
     certificates = Certificate.objects.filter(is_verified=True).select_related("student")
     return render(request, "studentpanel/certificate_all.html", {
@@ -196,23 +192,12 @@ def view_all_certificates(request):
     })
 
 
-
-
-
-
-
-
-
-
-
-# ───────── Batch Allotment Step 1 ─────────
-# views.py
+# ───────── Batch Allotment ─────────
 @login_required
 def batch_allotment(request):
     profile = StudentProfile.objects.get(user=request.user)
     batch_slots = BatchSlot.objects.all().order_by("start_date")
 
-    # ✅ If already selected, just show message
     already_selected = ProjectSelection.objects.filter(student=profile).first()
     if already_selected:
         return render(request, "studentpanel/select_project.html", {
@@ -222,15 +207,13 @@ def batch_allotment(request):
         })
 
     selected_slot = None
-    available_projects = []  # ✅ correct variable
+    available_projects = []
 
     if request.method == "POST":
         slot_id = request.POST.get("batch_slot")
         if slot_id:
             selected_slot = BatchSlot.objects.filter(id=slot_id).first()
-            print("✅ Selected Slot:", selected_slot)
 
-        # ✅ If user selected a project
         if "project_id" in request.POST:
             project_id = request.POST.get("project_id")
             if project_id:
@@ -244,7 +227,6 @@ def batch_allotment(request):
                     messages.success(request, "✅ Project request submitted successfully!")
                     return redirect("/dashboard/?tab=batch")
 
-        # ✅ Fetch projects only when slot selected
         if selected_slot:
             available_projects = (
                 Project.objects
@@ -253,12 +235,11 @@ def batch_allotment(request):
                 .filter(available__gt=0)
                 .order_by("project_code")
             )
-            print("✅ Projects Found:", available_projects.count())
 
     return render(request, "studentpanel/select_project.html", {
         "batch_slots": batch_slots,
         "selected_slot": selected_slot,
-        "projects": available_projects,  # ✅ correct variable pass
+        "projects": available_projects,
     })
 
 
@@ -271,14 +252,12 @@ def fill_ticket(request):
 
     if request.method == "POST":
         challan.ticket_number = request.POST.get("ticket_number")
-        challan.status = "Submitted"  # ✅ जैसे ही ticket भरेंगे, Submitted हो जाएगा
+        challan.status = "Submitted"
         challan.save()
         messages.success(request, "Ticket number submitted successfully.")
         return redirect("studentpanel:dashboard")
 
     return render(request, "studentpanel/fill_ticket.html", {"challan": challan})
-
-
 
 
 @login_required
@@ -295,3 +274,23 @@ def download_selected_certificates(request):
         return render(request, "studentpanel/selected_certificates_print.html", {
             "certificates": certificates
         })
+
+
+@login_required
+def challan_view(request):
+    profile = StudentProfile.objects.filter(user=request.user).first()
+    if not profile:
+        messages.warning(request, "Student profile not found. Please register first.")
+        return redirect("studentpanel:register")
+
+    challan = FeeChallan.objects.filter(student=profile).first()
+    director = Director.objects.first()
+
+    context = {
+        "student_name": profile.student_name if profile else "",
+        "unique_id": profile.unique_id if profile else "",
+        "date": date.today().strftime("%d-%m-%Y"),
+        "challan": challan,
+        "director": director,
+    }
+    return render(request, "studentpanel/challan.html", context)

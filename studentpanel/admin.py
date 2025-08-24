@@ -13,8 +13,9 @@ from django.utils.html import format_html
 from studentpanel.views import view_all_certificates
 from .models import (
     StudentProfile, FeeChallan, Project, ProjectSelection,
-    IDCard, Certificate, BatchSlot
+    IDCard, Certificate, BatchSlot, ProjectIncharge, Director
 )
+
 
 # ──────────────────────────────
 FEE_AMOUNT = 2500
@@ -152,10 +153,14 @@ class ProjectAdminForm(forms.ModelForm):
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     form = ProjectAdminForm
-    list_display = ("title", "branch", "duration_weeks", "slots", "slots_taken", "pdf_btn")
-    list_filter = ("branch", "duration_weeks")
-    search_fields = ("title", "Guide_By")
-
+    list_display = ("title", "branch", "duration_weeks", "slots", "slots_taken",  "incharge", "concerd_shop", "pdf_btn")
+    list_filter = ("branch", "duration_weeks","incharge")
+    search_fields = ("title", "project_code", "incharge__name", "concerd_shop")
+    fieldsets = (
+        ("Project Info", {
+            "fields": ("project_code", "title", "branch", "incharge", "slots", "slots_taken", "batch_slot", "concerd_shop")
+        }),
+    )
     # ✅ Add button to view project PDF
     def get_urls(self):
         base = super().get_urls()
@@ -176,11 +181,28 @@ class ProjectAdmin(admin.ModelAdmin):
         return HttpResponse(html)
 
 
+# Custom Filter for ProjectIncharge
+class ProjectInchargeFilter(admin.SimpleListFilter):
+    title = "Project Incharge"
+    parameter_name = "project_incharge"
+
+    def lookups(self, request, model_admin):
+        incharges = ProjectIncharge.objects.all()
+        return [(incharge.id, incharge.name) for incharge in incharges]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(project__Guide_By__id=self.value())
+        return queryset
+
+
+
+
 # ---------- Project Selection ----------
 @admin.register(ProjectSelection)
 class ProjectSelectionAdmin(admin.ModelAdmin):
     list_display = ("student", "project", "status", "action_btn")
-    list_filter = ("status", "project__Guide_By")
+    list_filter = ("status", "project", ProjectInchargeFilter)
 
     def get_urls(self):
         base = super().get_urls()
@@ -325,3 +347,33 @@ class CertificateAdmin(admin.ModelAdmin):
 '''@admin.register(CertificateSettings)
 class CertificateSettingsAdmin(admin.ModelAdmin):
     list_display = ('training_incharge_name', 'director_name')'''
+
+
+# ---------- Project Incharge ----------
+@admin.register(ProjectIncharge)
+class ProjectInchargeAdmin(admin.ModelAdmin):
+    list_display = ("name", "signature_preview")
+
+    def signature_preview(self, obj):
+        if obj.signature:
+            return format_html('<img src="{}" style="height:50px;"/>', obj.signature.url)
+        return "No signature"
+    signature_preview.short_description = "Signature"
+
+
+# ---------- Director ----------
+@admin.register(Director)
+class DirectorAdmin(admin.ModelAdmin):
+    list_display = ("name", "signature_preview")
+
+    def has_add_permission(self, request):
+        # ✅ Allow only 1 director (singleton)
+        if Director.objects.exists():
+            return False
+        return True
+
+    def signature_preview(self, obj):
+        if obj.signature:
+            return format_html('<img src="{}" style="height:50px;"/>', obj.signature.url)
+        return "No signature"
+    signature_preview.short_description = "Signature"

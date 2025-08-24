@@ -112,9 +112,10 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = [
-            'project_code', 'title', 'Guide_By',
+            'project_code', 'title',  'incharge',
             'branch', 'batch_slot',
-            'slots', 'slots_taken'
+            'slots', 'slots_taken',
+            'concerd_shop'
         ]
 
 

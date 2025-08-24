@@ -104,6 +104,16 @@
     </div>
 
     <div class="signature">
+         {% if director %}
+                  <span>{{ director.name }}</span><br>
+                  {% if director.signature %}
+                      <img src="{{ director.signature.url }}" alt="Director Signature" style="height:40px;">
+                  {% else %}
+                      <span style="font-size:12px;color:#888;">No signature uploaded</span>
+                  {% endif %}
+              {% else %}
+                  <span style="font-size:12px;color:#888;">Director info not available</span>
+              {% endif %}
         कृते निदेशक<br>
         पर्यवेक्षक प्रशिक्षण केंद्र,<br>
         चारबाग, लखनऊ|
