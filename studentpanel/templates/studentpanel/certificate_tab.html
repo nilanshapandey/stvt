@@ -1,11 +1,17 @@
 <!-- templates/studentpanel/certificate_tab.html -->
 {% extends "studentpanel/base.html" %}
 {% block title %}Certificate{% endblock %}
-{% block page %}
 
+{% block page %}
 <div class="content-wrapper pt-4">
   <div class="container">
-    <h3>Certificate</h3>
+    <div class="d-flex justify-content-between align-items-start">
+      <h3>Certificate</h3>
+      {% if profile.photo %}
+        <img src="{{ profile.photo.url }}" alt="Student Photo"
+             style="width:100px; height:120px; object-fit:cover; border:2px solid #333; border-radius:5px;">
+      {% endif %}
+    </div>
     <hr>
 
     {% if not certificate %}
@@ -27,7 +33,8 @@
 
     {% else %}
       <div class="alert alert-success">
-        🎉 Your certificate is ready and has been sent to your email.<br><br>
+        🎉 Your certificate is ready and has been sent to your email.<br>
+        <strong>Issue Date:</strong> {{ certificate.issue_date|date:"d M, Y" }}<br><br>
         <a href="{{ certificate.certificate_pdf.url }}" target="_blank" class="btn btn-primary">
           <i class="fas fa-download mr-1"></i>Download Certificate
         </a>
@@ -47,15 +54,17 @@
           <strong>Duration:</strong> {{ project.duration_weeks }} weeks
         </li>
         <li class="list-group-item">
-          <strong>Start Date:</strong> {{ project.start_date|date:"d M, Y" }}
+          <strong>Start Date:</strong> {{ start_date|date:"d M, Y" }}
         </li>
         <li class="list-group-item">
-          <strong>End Date:</strong> {{ project.end_date|date:"d M, Y" }}
+          <strong>End Date:</strong> {{ end_date|date:"d M, Y" }}
+        </li>
+        <li class="list-group-item">
+          <strong>Certificate Issue Date:</strong> {{ certificate.issue_date|date:"d M, Y" }}
         </li>
       </ul>
     </div>
 
   </div>
 </div>
-
 {% endblock %}

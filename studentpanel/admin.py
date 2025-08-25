@@ -9,12 +9,13 @@ from django.shortcuts import redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import path, reverse
 from django.utils.html import format_html
-
+#from .models import CertificateSettings
 from studentpanel.views import view_all_certificates
 from .models import (
     StudentProfile, FeeChallan, Project, ProjectSelection,
-    IDCard, Certificate, BatchSlot
+    IDCard, Certificate, BatchSlot, ProjectIncharge, Director
 )
+
 
 # ──────────────────────────────
 FEE_AMOUNT = 2500
@@ -152,10 +153,14 @@ class ProjectAdminForm(forms.ModelForm):
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     form = ProjectAdminForm
-    list_display = ("title", "branch", "duration_weeks", "slots", "slots_taken", "pdf_btn")
-    list_filter = ("branch", "duration_weeks")
-    search_fields = ("title", "Guide_By")
-
+    list_display = ("title", "branch", "duration_weeks", "slots", "slots_taken",  "incharge", "concerd_shop", "pdf_btn")
+    list_filter = ("branch", "duration_weeks","incharge")
+    search_fields = ("title", "project_code", "incharge__name", "concerd_shop")
+    fieldsets = (
+        ("Project Info", {
+            "fields": ("project_code", "title", "branch", "incharge", "slots", "slots_taken", "batch_slot", "concerd_shop")
+        }),
+    )
     # ✅ Add button to view project PDF
     def get_urls(self):
         base = super().get_urls()
@@ -176,11 +181,28 @@ class ProjectAdmin(admin.ModelAdmin):
         return HttpResponse(html)
 
 
+# Custom Filter for ProjectIncharge
+class ProjectInchargeFilter(admin.SimpleListFilter):
+    title = "Project Incharge"
+    parameter_name = "project_incharge"
+
+    def lookups(self, request, model_admin):
+        incharges = ProjectIncharge.objects.all()
+        return [(incharge.id, incharge.name) for incharge in incharges]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(project__Guide_By__id=self.value())
+        return queryset
+
+
+
+
 # ---------- Project Selection ----------
 @admin.register(ProjectSelection)
 class ProjectSelectionAdmin(admin.ModelAdmin):
     list_display = ("student", "project", "status", "action_btn")
-    list_filter = ("status", "project__Guide_By")
+    list_filter = ("status", "project", ProjectInchargeFilter)
 
     def get_urls(self):
         base = super().get_urls()
@@ -246,6 +268,8 @@ class ProjectSelectionAdmin(admin.ModelAdmin):
         return redirect("..")
 
 
+
+
 # ---------- Certificate ----------
 @admin.register(Certificate)
 class CertificateAdmin(admin.ModelAdmin):
@@ -253,6 +277,19 @@ class CertificateAdmin(admin.ModelAdmin):
     list_filter = ("is_verified",)
     readonly_fields = ("issued_on",)
     change_list_template = "admin/cert_change_list.html"
+
+    # Fields shown in the admin form
+    fieldsets = (
+        ("Certificate Info", {
+            "fields": ("student", "serial_number", "is_verified", "issued_on")
+        }),
+        ("Training Incharge", {
+            "fields": ("training_incharge_name", "training_incharge_signature")
+        }),
+        ("Director", {
+            "fields": ("director_name", "director_signature")
+        }),
+    )
 
     def get_urls(self):
         base = super().get_urls()
@@ -278,6 +315,7 @@ class CertificateAdmin(admin.ModelAdmin):
         profile = cert.student
         project = ProjectSelection.objects.get(student=profile).project
 
+        # Render certificate HTML with dynamic signatures/names
         html = render_to_string("studentpanel/certificate.html", {
             "profile": profile,
             "project": project,
@@ -300,7 +338,43 @@ class CertificateAdmin(admin.ModelAdmin):
         self.message_user(request, "Certificate verified and sent.", level=messages.SUCCESS)
         return redirect("..")
 
+
     def _certified_students(self, request):
         certified = Certificate.objects.filter(is_verified=True).select_related('student')
         html = render_to_string("studentpanel/certificate_students.html", {"certified": certified})
         return HttpResponse(html)
+
+'''@admin.register(CertificateSettings)
+class CertificateSettingsAdmin(admin.ModelAdmin):
+    list_display = ('training_incharge_name', 'director_name')'''
+
+
+
+# ---------- Project Incharge ----------
+@admin.register(ProjectIncharge)
+class ProjectInchargeAdmin(admin.ModelAdmin):
+    list_display = ("name", "signature_preview")
+
+    def signature_preview(self, obj):
+        if obj.signature:
+            return format_html('<img src="{}" style="height:50px;"/>', obj.signature.url)
+        return "No signature"
+    signature_preview.short_description = "Signature"
+
+
+# ---------- Director ----------
+@admin.register(Director)
+class DirectorAdmin(admin.ModelAdmin):
+    list_display = ("name", "signature_preview")
+
+    def has_add_permission(self, request):
+        # ✅ Allow only 1 director (singleton)
+        if Director.objects.exists():
+            return False
+        return True
+
+    def signature_preview(self, obj):
+        if obj.signature:
+            return format_html('<img src="{}" style="height:50px;"/>', obj.signature.url)
+        return "No signature"
+    signature_preview.short_description = "Signature"

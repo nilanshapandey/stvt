@@ -1,4 +1,3 @@
-<!-- templates/studentpanel/certificate.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +5,6 @@
   <title>Certificate - {{ profile.student_name }}</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap');
-
     body {
       font-family: 'Merriweather', serif;
       padding: 40px;
@@ -17,7 +15,6 @@
       min-height: 100vh;
       margin: 0;
     }
-
     .certificate {
       border: 8px double #2c3e50;
       padding: 40px 50px;
@@ -30,28 +27,24 @@
       box-shadow: 0 8px 20px rgba(44, 62, 80, 0.2);
       border-radius: 15px;
     }
-
-    /* ✅ Watermark in the center */
     .certificate::before {
       content: "";
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 500px;   /* Adjust size */
-      height: 500px;  /* Adjust size */
+      width: 500px;
+      height: 500px;
       transform: translate(-50%, -50%);
       background: url("/media/cert_assets/word/media/image1.png") no-repeat center;
       background-size: contain;
-      opacity: 0.1; /* Light watermark */
+      opacity: 0.08;
       z-index: 0;
       pointer-events: none;
     }
-
     .certificate > * {
       position: relative;
       z-index: 1;
     }
-
     .header {
       position: relative;
       text-align: center;
@@ -61,7 +54,6 @@
       color: #2c3e50;
       letter-spacing: 1.2px;
     }
-
     .header-logo {
       position: absolute;
       top: 0;
@@ -69,7 +61,6 @@
       height: 80px;
       width: auto;
     }
-
     .title {
       text-align: center;
       font-size: 36px;
@@ -77,7 +68,6 @@
       margin: 40px 0 30px;
       color: #34495e;
     }
-
     .details {
       font-size: 20px;
       line-height: 1.9;
@@ -85,32 +75,6 @@
       text-align: justify;
       color: #2c3e50;
     }
-
-    .footer {
-      margin-top: 70px;
-      display: flex;
-      justify-content: space-between;
-      font-weight: 700;
-      color: #2c3e50;
-    }
-
-    .footer .left,
-    .footer .right {
-      width: 40%;
-      text-align: center;
-    }
-
-    .seal-note {
-      text-align: center;
-      font-size: 16px;
-      margin-top: 50px;
-      color: #2c3e50;
-    }
-
-    .seal-note img {
-      height: 60px;
-    }
-
     .meta {
       display: flex;
       justify-content: space-between;
@@ -119,41 +83,19 @@
       color: #34495e;
       font-weight: 600;
     }
-
-    @media (max-width: 600px) {
-      .certificate {
-        padding: 30px 20px;
-      }
-
-      .header {
-        font-size: 20px;
-      }
-
-      .title {
-        font-size: 28px;
-      }
-
-      .details {
-        font-size: 16px;
-        margin: 0 10px;
-      }
-
-      .footer {
-        flex-direction: column;
-        gap: 20px;
-      }
-
-      .footer .left,
-      .footer .right {
-        width: 100%;
-        text-align: center;
-      }
-
-      .meta {
-        flex-direction: column;
-        gap: 5px;
-        font-size: 16px;
-      }
+    .footer {
+      margin-top: 50px;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      color: #2c3e50;
+    }
+    .footer .right {
+      text-align: right;
+    }
+    .footer img {
+      margin-top: 5px;
+      height: 55px;
     }
   </style>
 </head>
@@ -161,10 +103,16 @@
 
 <div class="certificate">
   <div class="header">
-    <img src="/media/cert_assets/word/media/image1.png" alt="logo" class="header-logo">
+    <img src="/media/cert_assets/logo.png" alt="logo" class="header-logo">
     SUPERVISORS TRAINING CENTRE<br>
     Northern Railway, Charbagh, Lucknow
   </div>
+
+  {% if profile.photo %}
+    <img class="photo" src="{{ profile.photo.url }}" alt="Photo"  
+         style="position:absolute; top:40px; right:40px; width:100px; height:120px; 
+                object-fit:cover; border:2px solid #333; border-radius:5px;">
+  {% endif %}
 
   <div class="title">CERTIFICATE</div>
 
@@ -174,26 +122,53 @@
   </div>
 
   <div class="details">
-    This is to certify that <strong>{{ profile.student_name }}</strong>, Student of
-    <strong>{{ profile.college }}</strong>, has undergone Summer Internship at
-    <strong>Rolling Stock Workshop, Northern Railway, Charbagh, Lucknow</strong> from
-    <strong>{{ project.start_date|date:"d M, Y" }}</strong> to
-    <strong>{{ project.end_date|date:"d M, Y" }}</strong>.<br><br>
+    This is to certify that <strong>{{ profile.student_name }}</strong>, 
+    Student of <strong>{{ profile.college }}</strong>, 
+    has undergone Summer Internship at 
+    <strong>Rolling Stock Workshop, Northern Railway, Charbagh, Lucknow</strong> 
+    from <strong>
+      {% if start_date and end_date %}
+        {{ start_date|date:"d M Y" }} to {{ end_date|date:"d M Y" }}
+      {% else %}
+        Not Assigned
+      {% endif %}
+    </strong>.<br><br>
 
-    The title of the project undertaken by the intern is <strong>{{ project.title }}</strong>.<br><br>
-    His / Her performance and conduct during the training was good. We wish him / her success in life.
+    The title of the project undertaken by the intern is 
+    <strong>{{ project.title }}</strong>.<br><br>
+    His / Her performance and conduct during the training was good. 
+    We wish him / her success in life.
   </div>
 
   <div class="footer">
-    <div class="left">Training Incharge</div>
-    <div class="right">Director
-    <br/><h6>STC/CB/LKO</h6>
+    <!-- ✅ Project Incharge (per project) -->
+    <div class="left">
+      <p>
+        <strong>
+          {% if project.incharge %} {{ project.incharge.name }} {% else %} Project Incharge {% endif %}
+        </strong><br>
+        {% if project.incharge and project.incharge.signature %}
+          <img src="{{ project.incharge.signature.url }}" alt="Incharge Signature">
+        {% endif %}<br>
+        Training Incharge
+      </p>
     </div>
-  </div>
 
-  <div class="seal-note">
-    
-    <strong>This Certificate is valid only with Institute Seal </strong>
+    <!-- ✅ Universal Director -->
+    <div class="right">
+        {% if director %}
+                  <span>{{ director.name }}</span><br>
+                  {% if director.signature %}
+                      <img src="{{ director.signature.url }}" alt="Director Signature" style="height:40px;">
+                  {% else %}
+                      <span style="font-size:12px;color:#888;">No signature uploaded</span>
+                  {% endif %}
+              {% else %}
+                  <span style="font-size:12px;color:#888;">Director info not available</span>
+              {% endif %}
+          <br> Director
+      </p>
+    </div>
   </div>
 </div>
 

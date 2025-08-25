@@ -1,25 +1,33 @@
-# studentpanel/views.py  ◆◆ copy‑paste everything ◆◆
+# studentpanel/views.py  ◆◆ copy-paste everything ◆◆
 from datetime import date
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
-from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.template.loader import render_to_string
 from django.db.models import Count
-from .forms import TicketForm  # ✅ Add this
-from .forms import BatchSlotForm
-from .models import BatchSlot, Certificate 
-from .forms import RegistrationForm, ProjectRequestForm
+from urllib.parse import urljoin
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+
+from .forms import TicketForm, BatchSlotForm, RegistrationForm, ProjectRequestForm
 from .models import (
     StudentProfile,
     FeeChallan,
     ProjectSelection,
     IDCard,
     Project,
+    BatchSlot,
+    Certificate,
+    ProjectIncharge,
+    Director,   # ✅ Added
 )
+    # Get director info
+
+director = Director.objects.first()
 
 # ───────────────────────── Register ─────────────────────────
 def register(request):
@@ -55,7 +63,6 @@ def logout_view(request):
 
 
 # ───────────────────────── Dashboard ────────────────────────
-
 @login_required
 def dashboard(request):
     profile = StudentProfile.objects.filter(user=request.user).first()
@@ -99,10 +106,24 @@ def dashboard(request):
             .filter(available__gt=0)
         )
 
+    # ✅ Certificate context (NEW)
+    certificate = Certificate.objects.filter(student=profile).order_by('-id').first()
+    cert_ready = bool(certificate and getattr(certificate, 'certificate_pdf', None))
+    # Prefer stored file URL when present; else fall back to your old route (if it streams PDF)
+    cert_download_url = None
+    if cert_ready and certificate.certificate_pdf:
+        cert_download_url = certificate.certificate_pdf.url
+    else:
+        # optional fallback to old view if you had one:
+        try:
+            cert_download_url = reverse('studentpanel:certificate')
+        except Exception:
+            cert_download_url = None
+
     context = {
         "profile": profile,
         "challan": challan,
-        "ticket_form": ticket_form,  # ✅ Added
+        "ticket_form": ticket_form,
         "project_req": project_sel,
         "project": project_sel.project if project_sel else None,
         "available_projects": available_projects,
@@ -110,49 +131,18 @@ def dashboard(request):
         "lor_is_pdf": bool(profile.lor_file and profile.lor_file.name.lower().endswith(".pdf")),
         "tab": request.GET.get("tab", "profile"),
         "today": date.today(),
+
+        # NEW
+        "certificate": certificate,
+        "cert_ready": cert_ready,
+        "cert_download_url": cert_download_url,
     }
     return render(request, "studentpanel/dashboard.html", context)
 
 
 
 
-#----------------------------
-
-
-@login_required
-def admit_card(request):
-    """
-    Renders a REAL‑TIME admit card for the logged‑in student.
-    It uses exactly the same context (`profile`, `project`) that the
-    admin action used when it created the file.
-    """
-    profile = StudentProfile.objects.filter(user=request.user).first()
-    if not profile:
-        messages.warning(request, "Profile not found.")
-        return redirect("studentpanel:dashboard")
-
-    # The student's approved project (if any)
-    psel = (
-        ProjectSelection.objects
-        .filter(student=profile, status="Approved")
-        .select_related("project")
-        .first()
-    )
-    if not psel:
-        messages.warning(request, "Project not approved yet.")
-        return redirect("studentpanel:dashboard")
-
-    context = {
-        "profile": profile,
-        "project": psel.project,
-    }
-    return render(request, "studentpanel/admit_card.html", context)
-
-
-
-
-# --- 3. New view function in views.py ---
-
+# ───────────────────────── Certificate ──────────────────────
 @login_required
 def certificate(request):
     profile = StudentProfile.objects.filter(user=request.user).first()
@@ -160,29 +150,60 @@ def certificate(request):
         messages.warning(request, "Student profile not found.")
         return redirect("studentpanel:dashboard")
 
-    project_sel = ProjectSelection.objects.filter(student=profile, status="Approved").first()
+    project_sel = (
+        ProjectSelection.objects
+        .filter(student=profile, status="Approved")
+        .select_related("project__batch_slot", "project__incharge")
+        .first()
+    )
     if not project_sel:
         messages.warning(request, "Project not found or not approved yet.")
         return redirect("studentpanel:dashboard")
 
     project = project_sel.project
-    batch_slot = project_sel.batch_slot 
-    today = date.today()
+    batch_slot = project.batch_slot
     certificate = Certificate.objects.filter(student=profile).first()
+    director = Director.objects.first()
+
+    # --- Build absolute URLs so images always load in new tab/print ---
+    base = request.build_absolute_uri("/")  # e.g. http://127.0.0.1:8000/
+    def abs_url(path_or_none):
+        if not path_or_none:
+            return None
+        # if it's already absolute, return as-is
+        if str(path_or_none).startswith("http://") or str(path_or_none).startswith("https://"):
+            return path_or_none
+        return urljoin(base, str(path_or_none).lstrip("/"))
+
+    # Logo from MEDIA (change to STATIC if you actually serve it from static)
+    logo_media_path = getattr(settings, "MEDIA_URL", "/media/") + "cert_assets/word/media/image1.png"
+    logo_url = abs_url(logo_media_path)
+
+    photo_url = abs_url(getattr(profile.photo, "url", None))
+    incharge_sig_url = abs_url(getattr(getattr(project.incharge, "signature", None), "url", None))
+    director_sig_url = abs_url(getattr(getattr(director, "signature", None), "url", None))
 
     context = {
         "profile": profile,
         "project": project,
-        "start_date": batch_slot.start_date if batch_slot else None,
-        "end_date": batch_slot.end_date if batch_slot else None,
-        "today": today,
+        "incharge": project.incharge,
+        "director": director,
+        "start_date": getattr(batch_slot, "start_date", None),
+        "end_date": getattr(batch_slot, "end_date", None),
+        "today": date.today(),
+        "issue_date": getattr(batch_slot, "start_date", date.today()),
         "certificate": certificate,
+
+        # absolute URLs used by the template
+        "logo_url": logo_url,
+        "photo_url": photo_url,
+        "incharge_sig_url": incharge_sig_url,
+        "director_sig_url": director_sig_url,
     }
-    return render(request, "studentpanel/certificate_tab.html", context)
+    return render(request, "studentpanel/certificate.html", context)
 
 
-# ✅ Admin view: All Verified Certificates
-
+# ───────── Admin: All Verified Certificates ─────────
 def view_all_certificates(request):
     certificates = Certificate.objects.filter(is_verified=True).select_related("student")
     return render(request, "studentpanel/certificate_all.html", {
@@ -191,23 +212,12 @@ def view_all_certificates(request):
     })
 
 
-
-
-
-
-
-
-
-
-
-# ───────── Batch Allotment Step 1 ─────────
-# views.py
+# ───────── Batch Allotment ─────────
 @login_required
 def batch_allotment(request):
     profile = StudentProfile.objects.get(user=request.user)
     batch_slots = BatchSlot.objects.all().order_by("start_date")
 
-    # If project already selected, show message only (no form)
     already_selected = ProjectSelection.objects.filter(student=profile).first()
     if already_selected:
         return render(request, "studentpanel/select_project.html", {
@@ -217,14 +227,13 @@ def batch_allotment(request):
         })
 
     selected_slot = None
-    projects = []
+    available_projects = []
 
     if request.method == "POST":
         slot_id = request.POST.get("batch_slot")
         if slot_id:
             selected_slot = BatchSlot.objects.filter(id=slot_id).first()
 
-        # If project selection step
         if "project_id" in request.POST:
             project_id = request.POST.get("project_id")
             if project_id:
@@ -235,23 +244,25 @@ def batch_allotment(request):
                     ProjectSelection.objects.create(student=profile, project=project, status="Pending")
                     project.slots_taken = F("slots_taken") + 1
                     project.save(update_fields=["slots_taken"])
-                    messages.success(request, "Project request submitted successfully!")
+                    messages.success(request, "✅ Project request submitted successfully!")
                     return redirect("/dashboard/?tab=batch")
 
-        # Only fetch projects if slot is selected but no project yet
         if selected_slot:
-            projects = (
+            available_projects = (
                 Project.objects
                 .filter(batch_slot=selected_slot, branch=profile.branch)
+                .select_related("incharge")
                 .annotate(available=F("slots") - F("slots_taken"))
+                .filter(available__gt=0)
                 .order_by("project_code")
             )
 
     return render(request, "studentpanel/select_project.html", {
         "batch_slots": batch_slots,
         "selected_slot": selected_slot,
-        "projects": projects,
+        "projects": available_projects,
     })
+
 
 @login_required
 def fill_ticket(request):
@@ -262,9 +273,79 @@ def fill_ticket(request):
 
     if request.method == "POST":
         challan.ticket_number = request.POST.get("ticket_number")
-        challan.status = "Submitted"  # ✅ जैसे ही ticket भरेंगे, Submitted हो जाएगा
+        challan.status = "Submitted"
         challan.save()
         messages.success(request, "Ticket number submitted successfully.")
         return redirect("studentpanel:dashboard")
 
     return render(request, "studentpanel/fill_ticket.html", {"challan": challan})
+
+
+@login_required
+def download_selected_certificates(request):
+    if request.method == "POST":
+        selected_ids = request.POST.getlist("selected_ids")
+
+        if not selected_ids:
+            messages.warning(request, "No students selected!")
+            return redirect(request.META.get("HTTP_REFERER", "/"))
+
+        certificates = Certificate.objects.filter(pk__in=selected_ids).select_related("student")
+
+        return render(request, "studentpanel/selected_certificates_print.html", {
+            "certificates": certificates
+        })
+
+# ───────────────────────── Challan View ───────────────────────
+@login_required
+def challan_view(request):
+    profile = StudentProfile.objects.filter(user=request.user).first()
+    if not profile:
+        messages.warning(request, "Student profile not found. Please register first.")
+        return redirect("studentpanel:register")
+
+    challan = FeeChallan.objects.filter(student=profile).first()
+    if not challan:
+        messages.warning(request, "Fee Challan not generated yet.")
+        return redirect("studentpanel:dashboard")
+
+    # Director singleton fetch karo
+    director = Director.objects.first()
+
+    context = {
+        "profile": profile,
+        "challan": challan,
+        "director": director,
+        "student_name": profile.user.get_full_name() or profile.user.username,  
+        "unique_id": profile.unique_id,
+        "date": challan.sent_on.strftime('%d-%m-%Y') if challan.sent_on else challan.created_on.strftime('%d-%m-%Y'),
+    }
+    return render(request, "studentpanel/challan.html", context)
+
+
+# ───────────────────────── Admit Card ───────────────────────
+@login_required
+def admit_card(request):
+    profile = StudentProfile.objects.filter(user=request.user).first()
+    if not profile:
+        messages.warning(request, "Profile not found.")
+        return redirect("studentpanel:dashboard")
+
+    psel = (
+        ProjectSelection.objects
+        .filter(student=profile, status="Approved")
+        .select_related("project")
+        .first()
+    )
+    if not psel:
+        messages.warning(request, "Project not approved yet.")
+        return redirect("studentpanel:dashboard")
+
+
+
+    context = {
+        "profile": profile,
+        "project": psel.project,
+        "director": director,
+    }
+    return render(request, "studentpanel/admit_card.html", context)

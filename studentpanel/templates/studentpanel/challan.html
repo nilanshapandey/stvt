@@ -93,7 +93,7 @@
     <div class="center">उत्तर रेलवे</div>
     <div class="center subheader">कार्यालय मुख्य कारखाना प्रबंधक, लोको वर्कशाप, चारबाग, लखनऊ</div>
 
-    <p class="date">संख्या-{{ unique_id }}<br>दिनांक: {{ date }}</p>
+    <p class="date">संख्या-{{  profile.unique_id }}<br>दिनांक: {{ date }}</p>
 
     <p class="recipient">To,<br>DCPM / CBS, LKO.<br>N. Rly, Lucknow.</p>
 
@@ -103,7 +103,18 @@
         श्री {{ student_name }} का ₹250/- ग्रीष्म कालीन प्रशिक्षण शुल्क को Dy. FA&CAO (W) /कारखाना, चारबाग के पक्ष में मद संख्या: जेड-650-99 में जमा करायें एवम पत्रवाहक को रसीद देने की कृपा करे।
     </div>
 
-    <div class="signature">
+   <div class="signature">
+    {% if director %}
+                  <span>{{ director.name }}</span><br>
+                  {% if director.signature %}
+                      <img src="{{ director.signature.url }}" alt="Director Signature" style="height:40px;">
+                  {% else %}
+                      <span style="font-size:12px;color:#888;">No signature uploaded</span>
+                  {% endif %}
+              {% else %}
+                  <span style="font-size:12px;color:#888;">Director info not available</span>
+              {% endif %}
+        <br>
         कृते निदेशक<br>
         पर्यवेक्षक प्रशिक्षण केंद्र,<br>
         चारबाग, लखनऊ|
@@ -111,4 +122,4 @@
 </div>
 
 </body>
-</html>
+</html> 

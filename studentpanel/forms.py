@@ -66,11 +66,14 @@ class RegistrationForm(forms.ModelForm):
     def clean_photo(self):
         photo = self.cleaned_data.get("photo")
         if photo:
-            if photo.size < 1 * 1024 * 1024:
-                raise ValidationError("Image size must be at least 1MB.")
-            if photo.size > 5 * 1024 * 1024:
-                raise ValidationError("Image size must not exceed 5MB.")
+            min_size = 50 * 1024  # 50KB
+            max_size = 4 * 1024 * 1024  # 4MB
+            if photo.size < min_size:
+                raise ValidationError("Image size must be at least 50KB.")
+            if photo.size > max_size:
+                raise ValidationError("Image size must not exceed 4MB.")
         return photo
+    
 
     def save(self, commit=True):
         data = self.cleaned_data
@@ -112,9 +115,10 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = [
-            'project_code', 'title', 'Guide_By',
+            'project_code', 'title',  'incharge',
             'branch', 'batch_slot',
-            'slots', 'slots_taken'
+            'slots', 'slots_taken',
+            'concerd_shop'
         ]
 
 

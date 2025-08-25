@@ -21,15 +21,18 @@
   <button onclick="window.print()" class="btn btn-danger mb-3">📄 Print / Save as PDF</button>
 </div>
 
-<h5 class="text-center" style="color:red">SSE / {{ project.Guide_By }}</h5>
-<p class="text-center mb-1">
-  <strong>{{ project.project_code }}</strong> – {{ project.title }}
+<h5 class="text-center" style="color:red">{{ project.project_code }}/{{ project.batch_slot.id }}</h5>
+<p style="color:red">
+  <strong>{{ project.concerd_shop }}</strong> 
 </p>
-<p class="text-center">
-  <b>Training Dates:</b> {{ project.batch_slot.start_date|date:"d.m.Y" }}
-  to {{ project.batch_slot.end_date|date:"d.m.Y" }}
-</p>
+<p>N. Rly, Loco Workshop, Charbagh, Lucknow.</p>
+<p>Sub: - Four-Week Training Projects Vocational Training to BE/Diploma Students.</p>
+<p>In Subject to the above, the undernoted trainee is directed to your end for vocational training from
 
+ <strong style="color:red">  Training Dates:{{ project.batch_slot.start_date|date:"d.m.Y" }}
+  to {{ project.batch_slot.end_date|date:"d.m.Y" }}</strong>The project allotted to the trainee is mentioned as under.
+</p>
+<p>Project title & training area: <strong style="color:red">{{ project.title }}</strong>.
 <table>
   <thead>
     <tr>
@@ -38,7 +41,7 @@
       <th>Name</th>
       <th>College</th>
       <th>Branch</th>
-      <th>Year</th>
+    
       <th>Course</th>
     </tr>
   </thead>
@@ -50,7 +53,7 @@
       <td>{{ s.student.student_name }}</td>
       <td>{{ s.student.college }}</td>
       <td>{{ s.student.branch }}</td>
-      <td>{{ s.student.course|default:"-" }}</td>
+     
       <td>{{ s.student.course }}</td>
     </tr>
     {% endfor %}
@@ -58,18 +61,36 @@
 </table>
 
 <div class="footer-rules">
-  <p><strong>Kindly release him and send his attendance along with the project report.</strong></p>
+  <p><strong>Kindly release him and send his attendance along with the project report. Necessary assistance may be provided if any.</strong></p><br/>
+  <p>Following are the rules for the trainees:</p>
+  
   <ol>
-    <li>The trainee will have to follow all rules and maintain discipline...</li>
-    <li>The trainee will not have access to any confidential documents.</li>
-    <li>Camera mobiles are prohibited in the training area...</li>
-    <li>The trainee will have to arrange their own lodging/transportation.</li>
-    <li>No stipend or allowances will be paid...</li>
-    <li>...</li>
+    <li>The trainee will have to follow all rules and regulations & will maintain high discipline all the time during training.</li>
+    <li>The trainee will not have access to any confidential document.</li>
+    <li>Camera Mobiles are strictly prohibited in the training area.<br/> If found, Camera Mobiles will be seized and will be returned after producing Original Bill of Mobile on completion of training.</li>
+    <li>The trainee will have to make his/her own arrangement for boarding lodging and transportation</li>
+    <li>No remuneration in the shape of stipend, salary or allowances of any kind will be paid to trainees by the Railway Administration. <br/>No passes or PTO will be issued to them.</li>
+    <li>The trainees will indemnify Railway Administration concerned for any loss or damage<br/> to equipment and fittings that may be caused by the trainee during the course of training in workshop area.</li>
+    <li>The trainee shall not be the employees of the Railway Administration and<br/> as such will not be entitled to any compensation or <br/>damages from the railway Administration under any circumstances and the trainee will not make any claim thereof.</li>
+    <li>The trainee shall be under the control and discipline of Dy. CME concerned</li>
+    <li> This vocational training is purely on the risk and cost of the trainee and can be disallowed at any time without assigning any reason/notice.</li>
+ 
+
   </ol>
 </div>
 
-<p style="text-align:right"><strong>Course Coordinator,<br>STC/CB/LKO</strong></p>
+<p style="text-align:right"><strong>Project Incharge<br>
+    {% if project.incharge %}
+      <span>{{ project.incharge.name }}</span><br>
+      {% if project.incharge.signature %}
+        <img src="{{ project.incharge.signature.url }}" alt="Incharge Signature" style="height:40px;">
+      {% else %}
+        <span style="font-size:12px;color:#888;">No signature uploaded</span>
+      {% endif %}
+    {% else %}
+      <span style="font-size:12px;color:#888;">Project Incharge info not available</span>
+    {% endif %}<br/>
+  STC/CB/LKO</strong></p>
 
 </body>
 </html>

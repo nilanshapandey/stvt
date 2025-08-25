@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Selected Certificates</title>
+  <style>
+    @media print {
+      .no-print { display: none; }
+      body { margin: 0; }
+    }
+    .certificate-page { page-break-after: always; }
+  </style>
+</head>
+<body>
+
+<div class="no-print" style="text-align:center; margin:20px;">
+  <button onclick="window.print()" style="padding:10px 20px; background:blue; color:white; font-size:16px; margin-left:10px;">
+    Print Certificates
+  </button>
+</div>
+
+<form id="cert-form" method="post" action="{% url 'studentpanel:Certificate.html' %}">
+  {% csrf_token %}
+  {% for cert in certificates %}
+    <div class="certificate-page">
+      <input type="checkbox" name="selected_ids" value="{{ cert.id }}" class="no-print" style="margin-bottom:10px;"> Select for Download
+      {% include "studentpanel/certificate.html" with profile=cert.student certificate=cert project=cert.student.projectselection.project %}
+    </div>
+  {% endfor %}
+  <div class="no-print" style="text-align:center; margin:20px;">
+    <button type="submit" style="padding:10px 20px; background:green; color:white; font-size:16px;">
+      Download Selected Certificates (PDF)
+    </button>
+  </div>
+</form>
+ 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+<script>
+  // ✅ Select All Checkboxes
+  document.getElementById("select-all").addEventListener("change", function () {
+    document.querySelectorAll('input[name="selected_ids"]').forEach(cb => cb.checked = this.checked);
+  });
+
+  // ✅ Validate before submit
+  function submitSelected() {
+    const selected = document.querySelectorAll('input[name="selected_ids"]:checked');
+    if (selected.length === 0) {
+      alert("⚠ Please select at least one student to download certificates.");
+      return;
+    }
+    document.getElementById("cert-form").submit();
+  }
+</script>
+</body>
+
+</html>
