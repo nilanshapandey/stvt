@@ -206,6 +206,7 @@ def batch_allotment(request):
             available_projects = (
                 Project.objects
                 .filter(batch_slot=selected_slot, branch=profile.branch)
+                .select_related("incharge")
                 .annotate(available=F("slots") - F("slots_taken"))
                 .filter(available__gt=0)
                 .order_by("project_code")
@@ -250,8 +251,6 @@ def download_selected_certificates(request):
             "certificates": certificates
         })
 
-
-# ───────────────────────── Challan View ───────────────────────
 # ───────────────────────── Challan View ───────────────────────
 @login_required
 def challan_view(request):
@@ -265,14 +264,19 @@ def challan_view(request):
         messages.warning(request, "Fee Challan not generated yet.")
         return redirect("studentpanel:dashboard")
 
+    # Director singleton fetch karo
+    director = Director.objects.first()
 
     context = {
         "profile": profile,
         "challan": challan,
-        "director": director,   # ab template me use kar sakte ho
-        "date": date.today().strftime("%d-%m-%Y"),
+        "director": director,
+        "student_name": profile.user.get_full_name() or profile.user.username,  
+        "unique_id": profile.unique_id,
+        "date": challan.sent_on.strftime('%d-%m-%Y') if challan.sent_on else challan.created_on.strftime('%d-%m-%Y'),
     }
     return render(request, "studentpanel/challan.html", context)
+
 
 # ───────────────────────── Admit Card ───────────────────────
 @login_required

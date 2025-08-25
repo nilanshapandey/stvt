@@ -79,7 +79,18 @@
   </ol>
 </div>
 
-<p style="text-align:right"><strong>Course Coordinator,<br>STC/CB/LKO</strong></p>
+<p style="text-align:right"><strong>Project Incharge<br>
+    {% if project.incharge %}
+      <span>{{ project.incharge.name }}</span><br>
+      {% if project.incharge.signature %}
+        <img src="{{ project.incharge.signature.url }}" alt="Incharge Signature" style="height:40px;">
+      {% else %}
+        <span style="font-size:12px;color:#888;">No signature uploaded</span>
+      {% endif %}
+    {% else %}
+      <span style="font-size:12px;color:#888;">Project Incharge info not available</span>
+    {% endif %}<br/>
+  STC/CB/LKO</strong></p>
 
 </body>
 </html>

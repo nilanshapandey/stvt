@@ -12,18 +12,31 @@
   <div class="sidebar">
     <nav class="mt-2">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview">
-        <li class="nav-item"><a href="#profile" class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-user"></i><p>Profile</p></a></li>
-       <!--<li class="nav-item"><a href="#lor"     class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-file"></i><p>Uploaded LOR</p></a></li>--> 
-        <li class="nav-item"><a href="#challan" class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-file-invoice"></i><p>Challan</p></a></li>
-        <li class="nav-item"><a href="#batch"   class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-list"></i><p>Batch Allotment</p></a></li>
-        <li class="nav-item"><a href="#admit"   class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-id-card"></i><p>Admit Card</p></a></li>
-        <li class="nav-item"><a href="{% url 'studentpanel:logout' %}" class="nav-link"><i class="nav-icon fas fa-sign-out-alt"></i><p>Logout</p></a></li>
+        <li class="nav-item"><a href="#profile" class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-user"></i>
+            <p>Profile</p>
+          </a></li>
+        <!--<li class="nav-item"><a href="#lor"     class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-file"></i><p>Uploaded LOR</p></a></li>-->
+        <li class="nav-item"><a href="#challan" class="nav-link" data-toggle="tab"><i
+              class="nav-icon fas fa-file-invoice"></i>
+            <p>Challan</p>
+          </a></li>
+        <li class="nav-item"><a href="#batch" class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-list"></i>
+            <p>Batch Allotment</p>
+          </a></li>
+        <li class="nav-item"><a href="#admit" class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-id-card"></i>
+            <p>Admit Card</p>
+          </a></li>
+        <li class="nav-item"><a href="{% url 'studentpanel:logout' %}" class="nav-link"><i
+              class="nav-icon fas fa-sign-out-alt"></i>
+            <p>Logout</p>
+          </a></li>
 
         <li class="nav-item">
-        <a href="{% url 'studentpanel:certificate' %}" class="nav-link">
-       <i class="nav-icon fas fa-certificate"></i><p>Certificate</p>
-        </a>
-      </li>
+          <a href="{% url 'studentpanel:certificate' %}" class="nav-link">
+            <i class="nav-icon fas fa-certificate"></i>
+            <p>Certificate</p>
+          </a>
+        </li>
 
       </ul>
     </nav>
@@ -35,9 +48,9 @@
   <section class="content pt-3">
     <div class="container-fluid">
       {% if messages %}
-        {% for m in messages %}
-          <div class="alert alert-{{ m.tags }}">{{ m }}</div>
-        {% endfor %}
+      {% for m in messages %}
+      <div class="alert alert-{{ m.tags }}">{{ m }}</div>
+      {% endfor %}
       {% endif %}
 
       <div class="tab-content">
@@ -50,28 +63,36 @@
                 <div class="card-body box-profile">
                   <div class="text-center mb-2">
                     {% if profile.photo %}
-                      <img class="profile-user-img img-fluid img-circle shadow" src="{{ profile.photo.url }}">
+                    <img class="profile-user-img img-fluid img-circle shadow" src="{{ profile.photo.url }}">
                     {% else %}
-                      <img class="profile-user-img img-fluid img-circle shadow" src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/avatar.png">
+                    <img class="profile-user-img img-fluid img-circle shadow"
+                      src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/avatar.png">
                     {% endif %}
                   </div>
                   <h3 class="profile-username text-center mb-1">{{ profile.student_name }}</h3>
                   <p class="text-muted text-center mb-2">{{ profile.course }} – {{ profile.branch }}</p>
                   <ul class="list-group list-group-unbordered mb-3">
-                    <li class="list-group-item"><b><i class="fas fa-id-badge mr-1"></i>Unique ID</b> <span class="float-right">{{ profile.unique_id }}</span></li>
-                    <li class="list-group-item"><b><i class="fas fa-building mr-1"></i>College</b> <span class="float-right">{{ profile.college }}</span></li>
-                    <li class="list-group-item"><b><i class="fas fa-phone mr-1"></i>Mobile</b> <span class="float-right">{{ profile.mobile }}</span></li>
-                    <li class="list-group-item"><b><i class="fas fa-envelope mr-1"></i>Email</b> <span class="float-right">{{ profile.user.email }}</span></li>
+                    <li class="list-group-item"><b><i class="fas fa-id-badge mr-1"></i>Unique ID</b> <span
+                        class="float-right">{{ profile.unique_id }}</span></li>
+                    <li class="list-group-item"><b><i class="fas fa-building mr-1"></i>College</b> <span
+                        class="float-right">{{ profile.college }}</span></li>
+                    <li class="list-group-item"><b><i class="fas fa-phone mr-1"></i>Mobile</b> <span
+                        class="float-right">{{ profile.mobile }}</span></li>
+                    <li class="list-group-item"><b><i class="fas fa-envelope mr-1"></i>Email</b> <span
+                        class="float-right">{{ profile.user.email }}</span></li>
                   </ul>
-                 
+
                 </div>
               </div>
             </div>
             <div class="col-md-8">
               <div class="card shadow-sm">
-                <div class="card-header bg-gradient-primary text-white"><h3 class="card-title mb-0"><i class="fas fa-info-circle mr-1"></i>Full Details</h3></div>
+                <div class="card-header bg-gradient-primary text-white">
+                  <h3 class="card-title mb-0"><i class="fas fa-info-circle mr-1"></i>Full Details</h3>
+                </div>
                 <div class="card-body">
-                  <div class="alert alert-info p-2 mb-3"><i class="fas fa-user-graduate mr-1"></i>Welcome to your dashboard! Here you can view and manage your profile, documents, and project status.</div>
+                  <div class="alert alert-info p-2 mb-3"><i class="fas fa-user-graduate mr-1"></i>Welcome to your
+                    dashboard! Here you can view and manage your profile, documents, and project status.</div>
                   <div class="row mb-2">
                     <div class="col-md-6">
                       <strong><i class="fas fa-user mr-1"></i> Father’s Name</strong>
@@ -102,7 +123,7 @@
                       <p class="text-muted mb-2">{{ profile.user.email }}</p>
                     </div>
                   </div>
-             <!--     {% if profile.lor_file %}
+                  <!--     {% if profile.lor_file %}
                     <div class="row mb-2">
                       <div class="col-md-12">
                         <strong><i class="fas fa-file-alt mr-1"></i> LOR</strong>
@@ -117,7 +138,7 @@
         </div>
 
         <!-- ========== LOR ========== -->
-       <!-- <div class="tab-pane fade" id="lor">
+        <!-- <div class="tab-pane fade" id="lor">
           <div class="card card-outline card-info shadow-sm">
             <div class="card-header bg-gradient-info text-white">
               <h4 class="card-title mb-0"><i class="fas fa-file-alt mr-1"></i>Letter of Recommendation (LOR)</h4>
@@ -135,124 +156,175 @@
           </div>
         </div>-->
 
-<!-- ========== Challan ========== -->
-<div class="tab-pane fade" id="challan">
-  <div class="card card-outline card-warning shadow-sm">
-    <div class="card-header bg-gradient-warning text-white d-flex align-items-center">
-      <i class="fas fa-file-invoice mr-2 fa-lg"></i>
-      <h4 class="card-title mb-0">Fee Challan</h4>
-    </div>
-    <div class="card-body">
-      <p class="mb-2"><i class="fas fa-info-circle mr-1"></i>Your challan is required for payment verification. Download and submit it as per instructions.</p>
-      {% if challan %}
-        {% if challan.challan_pdf %}
-          <div class="mb-3">
-            {% if challan.status == "Pending" %}
-              <span class="badge badge-warning px-3 py-2"><i class="fas fa-hourglass-half mr-1"></i>Challan created; payment pending.</span>
-            {% elif challan.status == "Submitted" %}
-              <span class="badge badge-info px-3 py-2"><i class="fas fa-upload mr-1"></i>Submitted; awaiting admin verification.</span>
-            {% elif challan.status == "Verified" %}
-              <span class="badge badge-success px-3 py-2"><i class="fas fa-check-circle mr-1"></i>Payment verified</span>
-            {% endif %}
+        <!-- ========== Challan ========== -->
+        <div class="tab-pane fade" id="challan">
+          <div class="card card-outline card-warning shadow-sm">
+            <div class="card-header bg-gradient-warning text-white d-flex align-items-center">
+              <i class="fas fa-file-invoice mr-2 fa-lg"></i>
+              <h4 class="card-title mb-0">Fee Challan</h4>
+            </div>
+            <div class="card-body">
+              <p class="mb-2">
+                <i class="fas fa-info-circle mr-1"></i>
+                Your challan is required for payment verification. Download and submit it as per instructions.
+              </p>
+
+              {% if challan %}
+              {% if challan.challan_pdf %}
+              <div class="mb-3">
+                {% if challan.status == "Pending" %}
+                <span class="badge badge-warning px-3 py-2">
+                  <i class="fas fa-hourglass-half mr-1"></i>Challan created; payment pending.
+                </span>
+                {% elif challan.status == "Submitted" %}
+                <span class="badge badge-info px-3 py-2">
+                  <i class="fas fa-upload mr-1"></i>Submitted; awaiting admin verification.
+                </span>
+                {% elif challan.status == "Verified" %}
+                <span class="badge badge-success px-3 py-2">
+                  <i class="fas fa-check-circle mr-1"></i>Payment verified
+                </span>
+                {% endif %}
+              </div>
+
+              <!-- Buttons: View Challan (HTML page) + Download PDF -->
+              <div class="btn-group">
+                <a class="btn btn-primary btn-sm font-weight-bold" target="_blank"
+                  href="{% url 'studentpanel:challan' %}">
+                  <i class="fas fa-eye mr-1"></i>View Challan
+                </a>
+
+              </div>
+
+              {% else %}
+              <div class="alert alert-secondary mb-0">
+                <i class="fas fa-spinner fa-spin mr-1"></i>
+                Please wait… admin hasn’t generated your challan file yet.
+              </div>
+              {% endif %}
+              {% else %}
+              <div class="alert alert-secondary mb-0">
+                <i class="fas fa-spinner fa-spin mr-1"></i>
+                Please wait… challan row not created yet.
+              </div>
+              {% endif %}
+            </div>
+
           </div>
-          <a class="btn btn-primary btn-sm font-weight-bold" target="_blank" href="{{ challan.challan_pdf.url }}"><i class="fas fa-download mr-1"></i>Download Challan</a>
-        {% else %}
-          <div class="alert alert-secondary mb-0"><i class="fas fa-spinner fa-spin mr-1"></i>Please wait… admin hasn’t generated your challan file yet.</div>
-        {% endif %}
-      {% else %}
-        <div class="alert alert-secondary mb-0"><i class="fas fa-spinner fa-spin mr-1"></i>Please wait… challan row not created yet.</div>
-      {% endif %}
-    </div>
-  </div>
-</div>
-
-     
-<!-- ========== Batch Allotment ========== -->
-
-<!-- ========== Batch Allotment ========== -->
-<div class="tab-pane fade" id="batch">
-  
-  {% if challan and not challan.ticket_number %}
-    <div class="card card-body shadow-sm mb-3">
-      <h5><i class="fas fa-ticket-alt"></i> Enter Your Ticket Number</h5>
-      <form method="POST">
-        {% csrf_token %}
-        {{ ticket_form.ticket_number }}
-        <button type="submit" name="ticket_submit" class="btn btn-primary mt-2">Submit Ticket Number</button>
-      </form>
-    </div>
-
-  {% elif not profile.payment_verified %}
-    <div class="alert alert-info mb-3">Payment not verified.</div>
-
-  {% elif project_req %}
-    <!-- Show project if already selected -->
-    <div class="card mt-4">
-      <div class="card-body">
-        <h5 class="text-success"><strong>Project Already Selected:</strong></h5>
-        <p><strong>Project Name:</strong> {{ project.title }}</p>
-        <p><strong>Project Code:</strong> {{ project.project_code }}</p>
-        <p><strong>Project Incharge:</strong> {{ project.incharge }}</p>
-        <p><strong>Duration:</strong> {{ project.batch_slot.duration_weeks }} Weeks</p>
-        <p><strong>Dates:</strong> {{ project.batch_slot.start_date|date:"d M Y" }} to {{ project.batch_slot.end_date|date:"d M Y" }}</p>
-      </div>
-    </div>
-
-  {% else %}
-    <div class="text-center mt-3">
-      <a href="{% url 'studentpanel:batch_allotment' %}" class="btn btn-primary">
-        Start Batch Allotment Wizard
-      </a>
-    </div>
-  {% endif %}
-</div>
+        </div>
 
 
-<!-- ========== Admit Card ========== -->
-<div class="tab-pane fade" id="admit">
-  <div class="card card-outline card-success shadow-sm">
-    <div class="card-header bg-gradient-success text-white d-flex align-items-center">
-      <i class="fas fa-id-card mr-2 fa-lg"></i>
-      <h4 class="card-title mb-0">Admit Card</h4>
-    </div>
-    <div class="card-body">
-      <p class="mb-2"><i class="fas fa-info-circle mr-1"></i>Your admit card is required for entry to the training program. Download and print it once available.</p>
-      {% if id_card %}
-        <a class="btn btn-success btn-sm btn-block font-weight-bold" target="_blank" href="{% url 'studentpanel:admit_card' %}">
-          <i class="fas fa-download mr-1"></i>Download Admit Card
-        </a>
-      {% elif project_req and project_req.status == "Approved" %}
-        <div class="alert alert-info mb-0"><i class="fas fa-info-circle mr-1"></i>Admit card will be sent shortly.</div>
-      {% elif project_req %}
-        <div class="alert alert-warning mb-0"><i class="fas fa-exclamation-circle mr-1"></i>Your project request is pending admin approval.</div>
-      {% else %}
-        <div class="alert alert-secondary mb-0"><i class="fas fa-info-circle mr-1"></i>Admit card becomes available after project approval.</div>
-      {% endif %}
-    </div>
-  </div>
-</div>
+        <!-- ========== Batch Allotment ========== -->
 
-<!-- ========== Certificate ========== -->
-<div class="tab-pane fade" id="certificate">
-  <div class="card card-outline card-info shadow-sm">
-    <div class="card-header bg-gradient-info text-white d-flex align-items-center">
-      <i class="fas fa-certificate mr-2 fa-lg"></i>
-      <h4 class="card-title mb-0">Certificate</h4>
-    </div>
-    <div class="card-body">
-      <p class="mb-2"><i class="fas fa-info-circle mr-1"></i>Your certificate will be available for download once issued and verified by admin.</p>
-      {% if certificate and certificate.certificate_pdf %}
-        <a class="btn btn-primary btn-sm font-weight-bold" target="_blank" href="{{ certificate.certificate_pdf.url }}">
-          <i class="fas fa-download mr-1"></i>Download Certificate
-        </a>
-      {% elif certificate %}
-        <div class="alert alert-warning mb-0"><i class="fas fa-exclamation-circle mr-1"></i>Certificate is not yet issued or verified.</div>
-      {% else %}
-        <div class="alert alert-secondary mb-0"><i class="fas fa-info-circle mr-1"></i>Certificate will be available after completion and admin verification.</div>
-      {% endif %}
-    </div>
-  </div>
-</div>
+        <!-- ========== Batch Allotment ========== -->
+        <div class="tab-pane fade" id="batch">
+
+          <section class="content">
+            <div class="container-fluid">
+              <div class="row justify-content-center">
+                <div class="col-md-8">
+                  <div class="card card-primary card-outline shadow mb-4">
+                    <div class="card-header">
+                      <h3 class="card-title"><i class="fas fa-list"></i> Batch Allotment</h3>
+                    </div>
+                    <div class="card-body">
+                      {% if challan and not challan.ticket_number %}
+                        <div class="alert alert-warning mb-3"><i class="fas fa-ticket-alt"></i> Please enter your ticket number to proceed.</div>
+                        <form method="POST" class="mb-3">
+                          {% csrf_token %}
+                          <div class="form-group">
+                            <label for="ticket_number"><i class="fas fa-ticket-alt"></i> Ticket Number</label>
+                            {{ ticket_form.ticket_number }}
+                          </div>
+                          <button type="submit" name="ticket_submit" class="btn btn-success"><i class="fas fa-paper-plane"></i> Submit</button>
+                        </form>
+                      {% elif not profile.payment_verified %}
+                        <div class="alert alert-info"><i class="fas fa-info-circle"></i> Payment not verified. Please complete payment to proceed with batch allotment.</div>
+                      {% elif project_req %}
+                        <div class="card card-success card-outline">
+                          <div class="card-header">
+                            <h5 class="card-title"><i class="fas fa-check-circle text-success"></i> Project Already Selected</h5>
+                          </div>
+                          <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                              <li class="list-group-item"><strong>Project Name:</strong> {{ project.title }}</li>
+                              <li class="list-group-item"><strong>Project Code:</strong> {{ project.project_code }}</li>
+                              <li class="list-group-item"><strong>Project Incharge:</strong> {{ project.incharge }}</li>
+                              <li class="list-group-item"><strong>Duration:</strong> {{ project.batch_slot.duration_weeks }} Weeks</li>
+                              <li class="list-group-item"><strong>Dates:</strong> {{ project.batch_slot.start_date|date:"d M Y" }} to {{ project.batch_slot.end_date|date:"d M Y" }}</li>
+                            </ul>
+                          </div>
+                        </div>
+                      {% else %}
+                        <div class="text-center">
+                          <a href="{% url 'studentpanel:batch_allotment' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-magic"></i> Start Batch Allotment Wizard
+                          </a>
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+
+        <!-- ========== Admit Card ========== -->
+        <div class="tab-pane fade" id="admit">
+          <div class="card card-outline card-success shadow-sm">
+            <div class="card-header bg-gradient-success text-white d-flex align-items-center">
+              <i class="fas fa-id-card mr-2 fa-lg"></i>
+              <h4 class="card-title mb-0">Admit Card</h4>
+            </div>
+            <div class="card-body">
+              <p class="mb-2"><i class="fas fa-info-circle mr-1"></i>Your admit card is required for entry to the
+                training program. Download and print it once available.</p>
+              {% if id_card %}
+              <a class="btn btn-success btn-sm btn-block font-weight-bold" target="_blank"
+                href="{% url 'studentpanel:admit_card' %}">
+                <i class="fas fa-download mr-1"></i>Download Admit Card
+              </a>
+              {% elif project_req and project_req.status == "Approved" %}
+              <div class="alert alert-info mb-0"><i class="fas fa-info-circle mr-1"></i>Admit card will be sent shortly.
+              </div>
+              {% elif project_req %}
+              <div class="alert alert-warning mb-0"><i class="fas fa-exclamation-circle mr-1"></i>Your project request
+                is pending admin approval.</div>
+              {% else %}
+              <div class="alert alert-secondary mb-0"><i class="fas fa-info-circle mr-1"></i>Admit card becomes
+                available after project approval.</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== Certificate ========== -->
+        <div class="tab-pane fade" id="certificate">
+          <div class="card card-outline card-info shadow-sm">
+            <div class="card-header bg-gradient-info text-white d-flex align-items-center">
+              <i class="fas fa-certificate mr-2 fa-lg"></i>
+              <h4 class="card-title mb-0">Certificate</h4>
+            </div>
+            <div class="card-body">
+              <p class="mb-2"><i class="fas fa-info-circle mr-1"></i>Your certificate will be available for download
+                once issued and verified by admin.</p>
+              {% if certificate and certificate.certificate_pdf %}
+              <a class="btn btn-primary btn-sm font-weight-bold" target="_blank"
+                href="{{ certificate.certificate_pdf.url }}">
+                <i class="fas fa-download mr-1"></i>Download Certificate
+              </a>
+              {% elif certificate %}
+              <div class="alert alert-warning mb-0"><i class="fas fa-exclamation-circle mr-1"></i>Certificate is not yet
+                issued or verified.</div>
+              {% else %}
+              <div class="alert alert-secondary mb-0"><i class="fas fa-info-circle mr-1"></i>Certificate will be
+                available after completion and admin verification.</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
 
       </div>
     </div>
@@ -262,27 +334,27 @@
 {% block extra_js %}
 <script>
   $(function () {
-      // ----- helper to switch tab & sidebar state -----
-      function showTab(targetID) {
-          // content
-          $('.tab-pane').removeClass('show active');
-          $(targetID).addClass('show active');
-          // sidebar
-          $('.sidebar a[data-toggle="tab"]').removeClass('active');
-          $('.sidebar a[href="' + targetID + '"]').addClass('active');
-      }
+    // ----- helper to switch tab & sidebar state -----
+    function showTab(targetID) {
+      // content
+      $('.tab-pane').removeClass('show active');
+      $(targetID).addClass('show active');
+      // sidebar
+      $('.sidebar a[data-toggle="tab"]').removeClass('active');
+      $('.sidebar a[href="' + targetID + '"]').addClass('active');
+    }
 
-      // ----- sidebar click -----
-      $('.sidebar a[data-toggle="tab"]').on('click', function (e) {
-          e.preventDefault();
-          const target = $(this).attr('href');
-          showTab(target);
-          history.replaceState(null, '', '?tab=' + target.substring(1));   // update URL (optional)
-      });
+    // ----- sidebar click -----
+    $('.sidebar a[data-toggle="tab"]').on('click', function (e) {
+      e.preventDefault();
+      const target = $(this).attr('href');
+      showTab(target);
+      history.replaceState(null, '', '?tab=' + target.substring(1));   // update URL (optional)
+    });
 
-      // ----- initial load (query ?tab=...) -----
-      const initial = new URLSearchParams(window.location.search).get('tab') || 'profile';
-      showTab('#' + initial);
+    // ----- initial load (query ?tab=...) -----
+    const initial = new URLSearchParams(window.location.search).get('tab') || 'profile';
+    showTab('#' + initial);
   });
 </script>
 {% endblock %}
