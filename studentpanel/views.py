@@ -4,11 +4,14 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
-from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.template.loader import render_to_string
 from django.db.models import Count
+from urllib.parse import urljoin
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import TicketForm, BatchSlotForm, RegistrationForm, ProjectRequestForm
 from .models import (
@@ -103,6 +106,20 @@ def dashboard(request):
             .filter(available__gt=0)
         )
 
+    # ✅ Certificate context (NEW)
+    certificate = Certificate.objects.filter(student=profile).order_by('-id').first()
+    cert_ready = bool(certificate and getattr(certificate, 'certificate_pdf', None))
+    # Prefer stored file URL when present; else fall back to your old route (if it streams PDF)
+    cert_download_url = None
+    if cert_ready and certificate.certificate_pdf:
+        cert_download_url = certificate.certificate_pdf.url
+    else:
+        # optional fallback to old view if you had one:
+        try:
+            cert_download_url = reverse('studentpanel:certificate')
+        except Exception:
+            cert_download_url = None
+
     context = {
         "profile": profile,
         "challan": challan,
@@ -114,6 +131,11 @@ def dashboard(request):
         "lor_is_pdf": bool(profile.lor_file and profile.lor_file.name.lower().endswith(".pdf")),
         "tab": request.GET.get("tab", "profile"),
         "today": date.today(),
+
+        # NEW
+        "certificate": certificate,
+        "cert_ready": cert_ready,
+        "cert_download_url": cert_download_url,
     }
     return render(request, "studentpanel/dashboard.html", context)
 
@@ -128,10 +150,12 @@ def certificate(request):
         messages.warning(request, "Student profile not found.")
         return redirect("studentpanel:dashboard")
 
-    project_sel = ProjectSelection.objects.filter(
-        student=profile, status="Approved"
-    ).select_related("project__batch_slot", "project__incharge").first()
-
+    project_sel = (
+        ProjectSelection.objects
+        .filter(student=profile, status="Approved")
+        .select_related("project__batch_slot", "project__incharge")
+        .first()
+    )
     if not project_sel:
         messages.warning(request, "Project not found or not approved yet.")
         return redirect("studentpanel:dashboard")
@@ -139,21 +163,42 @@ def certificate(request):
     project = project_sel.project
     batch_slot = project.batch_slot
     certificate = Certificate.objects.filter(student=profile).first()
-
-    # ✅ Universal Director
     director = Director.objects.first()
+
+    # --- Build absolute URLs so images always load in new tab/print ---
+    base = request.build_absolute_uri("/")  # e.g. http://127.0.0.1:8000/
+    def abs_url(path_or_none):
+        if not path_or_none:
+            return None
+        # if it's already absolute, return as-is
+        if str(path_or_none).startswith("http://") or str(path_or_none).startswith("https://"):
+            return path_or_none
+        return urljoin(base, str(path_or_none).lstrip("/"))
+
+    # Logo from MEDIA (change to STATIC if you actually serve it from static)
+    logo_media_path = getattr(settings, "MEDIA_URL", "/media/") + "cert_assets/word/media/image1.png"
+    logo_url = abs_url(logo_media_path)
+
+    photo_url = abs_url(getattr(profile.photo, "url", None))
+    incharge_sig_url = abs_url(getattr(getattr(project.incharge, "signature", None), "url", None))
+    director_sig_url = abs_url(getattr(getattr(director, "signature", None), "url", None))
 
     context = {
         "profile": profile,
         "project": project,
         "incharge": project.incharge,
         "director": director,
-        "start_date": batch_slot.start_date if batch_slot else None,
-        "end_date": batch_slot.end_date if batch_slot else None,
+        "start_date": getattr(batch_slot, "start_date", None),
+        "end_date": getattr(batch_slot, "end_date", None),
         "today": date.today(),
-        "issue_date": batch_slot.start_date if batch_slot else date.today(),
+        "issue_date": getattr(batch_slot, "start_date", date.today()),
         "certificate": certificate,
-        "photo_url": profile.photo.url if profile.photo else None,
+
+        # absolute URLs used by the template
+        "logo_url": logo_url,
+        "photo_url": photo_url,
+        "incharge_sig_url": incharge_sig_url,
+        "director_sig_url": director_sig_url,
     }
     return render(request, "studentpanel/certificate.html", context)
 

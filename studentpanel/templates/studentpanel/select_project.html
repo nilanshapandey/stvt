@@ -8,10 +8,22 @@
   <div class="sidebar">
     <nav class="mt-2">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview">
-        <li class="nav-item"><a href="{% url 'studentpanel:dashboard' %}" class="nav-link"><i class="nav-icon fas fa-tachometer-alt"></i><p>Dashboard</p></a></li>
-        <li class="nav-item"><a href="{% url 'studentpanel:batch_allotment' %}" class="nav-link active"><i class="nav-icon fas fa-layer-group"></i><p>Batch Allotment</p></a></li>
-        <li class="nav-item"><a href="{% url 'studentpanel:certificate' %}" class="nav-link"><i class="nav-icon fas fa-certificate"></i><p>Certificate</p></a></li>
-        <li class="nav-item"><a href="{% url 'studentpanel:logout' %}" class="nav-link"><i class="nav-icon fas fa-sign-out-alt"></i><p>Logout</p></a></li>
+        <li class="nav-item"><a href="{% url 'studentpanel:dashboard' %}" class="nav-link"><i
+              class="nav-icon fas fa-tachometer-alt"></i>
+            <p>Dashboard</p>
+          </a></li>
+        <li class="nav-item"><a href="{% url 'studentpanel:batch_allotment' %}" class="nav-link active"><i
+              class="nav-icon fas fa-layer-group"></i>
+            <p>Batch Allotment</p>
+          </a></li>
+        <li class="nav-item"><a href="{% url 'studentpanel:certificate' %}" class="nav-link"><i
+              class="nav-icon fas fa-certificate"></i>
+            <p>Certificate</p>
+          </a></li>
+        <li class="nav-item"><a href="{% url 'studentpanel:logout' %}" class="nav-link"><i
+              class="nav-icon fas fa-sign-out-alt"></i>
+            <p>Logout</p>
+          </a></li>
       </ul>
     </nav>
   </div>
@@ -27,76 +39,109 @@
               <h3 class="card-title text-white"><i class="fas fa-layer-group"></i> Batch Allotment</h3>
             </div>
             <div class="card-body">
-              <!-- STEP 1: Choose Slot -->
-              {% if not selected_slot %}
-                <form method="POST">
-                  {% csrf_token %}
-                  <div class="form-group">
-                    <label for="batch_slot"><strong><i class="fas fa-calendar-alt"></i> Select Batch Slot:</strong></label>
-                    <select name="batch_slot" id="batch_slot" class="form-control select2" required>
-                      <option value="">-- Choose Slot --</option>
-                      {% for slot in batch_slots %}
-                        <option value="{{ slot.id }}">
-                          {{ slot.start_date|date:"d M" }} - {{ slot.end_date|date:"d M" }} ({{ slot.duration_weeks }} weeks)
-                        </option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  <button type="submit" class="btn btn-primary mt-3"><i class="fas fa-arrow-right"></i> Next</button>
-                </form>
+
+              {# STEP 0: Agar slots hi available nahi hain #}
+              {% if not selected_slot and not batch_slots %}
+              <div class="alert alert-warning text-center mt-4">
+                No batch slots available at the moment. Please contact the administrator.
+              </div>
               {% endif %}
 
-              <!-- STEP 2: Show Projects if slot selected -->
-              {% if selected_slot and projects %}
-                <hr>
-                <h5 class="mt-4"><i class="fas fa-project-diagram"></i> Select a Project</h5>
-                <form method="POST">
-                  {% csrf_token %}
-                  <input type="hidden" name="batch_slot" value="{{ selected_slot.id }}">
+              {# STEP 1: Slot selection (jab tak slot choose nahi hua) #}
+              {% if not selected_slot %}
+              <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                  <label for="batch_slot"><strong><i class="fas fa-calendar-alt"></i> Select Batch
+                      Slot:</strong></label>
+                  <select name="batch_slot" id="batch_slot" class="form-control select2" required>
+                    <option value="">-- Choose Slot --</option>
+                    {% for slot in batch_slots %}
+                    <option value="{{ slot.id }}">
+                      {{ slot.start_date|date:"d M" }} - {{ slot.end_date|date:"d M" }} ({{ slot.duration_weeks }}
+                      weeks)
+                    </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">
+                  <i class="fas fa-arrow-right"></i> Next
+                </button>
+              </form>
+              {% endif %}
 
-                  <div class="table-responsive">
-                    <table class="table table-bordered table-hover text-center mt-3">
-                      <thead class="thead-dark">
-                        <tr>
-                          <th><i class="fas fa-check-circle"></i> Select</th>
-                          <th><i class="fas fa-barcode"></i> Project Code</th>
-                          <th><i class="fas fa-book"></i> Project Title</th>
-                          <th><i class="fas fa-user-tie"></i> Project Incharge </th>
-                          <th><i class="fas fa-users"></i> Total Seats</th>
-                          <th><i class="fas fa-user-check"></i> Available</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for proj in projects %}
-                          <tr class="{% if proj.available <= 0 %}table-danger{% endif %}">
-                            <td>
-                              {% if proj.available > 0 %}
-                                <input type="radio" name="project_id" value="{{ proj.id }}" required>
-                              {% else %}
-                                <span class="text-muted"><i class="fas fa-times-circle"></i> Full</span>
-                              {% endif %}
-                            </td>
-                            <td>{{ proj.project_code }}</td>
-                            <td>{{ proj.title }}</td>
-                            <td>{% if proj.incharge %}{{ proj.incharge.name }}{% else %}<span class="text-muted">N/A</span>{% endif %}</td>
-                            <td>{{ proj.slots }}</td>
-                            <td>{{ proj.available }}</td>
-                          </tr>
-                        {% empty %}
-                          <tr>
-                            <td colspan="6" class="text-danger">No projects available.</td>
-                          </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
-                  </div>
+              {# STEP 2: Slot choose ho chuka hai — yahin par projects ka empty/not-empty handle karo #}
+              {% if selected_slot %}
+              <hr>
+              <h5 class="mt-4"><i class="fas fa-project-diagram"></i> Select a Project</h5>
 
-                  <div class="text-center">
-                    <button class="btn btn-success mt-3"><i class="fas fa-paper-plane"></i> Submit</button>
-                  </div>
-                </form>
+              {# CASE A: Is batch me koi project hi nahi mila #}
+              {% if not projects %}
+              <div class="alert alert-info text-center mt-4">
+                <i class="fas fa-info-circle"></i>
+                No any project available for this batch. Please choose a different batch.
+              </div>
+
+              {# Wapas slot selection pe jane ke liye simple link (same page reload) #}
+              <div class="text-center">
+                <a href="" class="btn btn-outline-primary mt-2">
+                  <i class="fas fa-redo"></i> Choose Different Batch
+                </a>
+              </div>
+
+              {% else %}
+              {# CASE B: Projects mile hain — table show karo #}
+              <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="batch_slot" value="{{ selected_slot.id }}">
+
+                <div class="table-responsive">
+                  <table class="table table-bordered table-hover text-center mt-3">
+                    <thead class="thead-dark">
+                      <tr>
+                        <th><i class="fas fa-check-circle"></i> Select</th>
+                        <th><i class="fas fa-barcode"></i> Project Code</th>
+                        <th><i class="fas fa-book"></i> Project Title</th>
+                        <th><i class="fas fa-user-tie"></i> Project Incharge</th>
+                        <th><i class="fas fa-users"></i> Total Seats</th>
+                        <th><i class="fas fa-user-check"></i> Available</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for proj in projects %}
+                      <tr class="{% if proj.available <= 0 %}table-danger{% endif %}">
+                        <td>
+                          {% if proj.available > 0 %}
+                          <input type="radio" name="project_id" value="{{ proj.id }}" required>
+                          {% else %}
+                          <span class="text-muted"><i class="fas fa-times-circle"></i> Full</span>
+                          {% endif %}
+                        </td>
+                        <td>{{ proj.project_code }}</td>
+                        <td>{{ proj.title }}</td>
+                        <td>
+                          {% if proj.incharge %}{{ proj.incharge.name }}{% else %}
+                          <span class="text-muted">N/A</span>
+                          {% endif %}
+                        </td>
+                        <td>{{ proj.slots }}</td>
+                        <td>{{ proj.available }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="text-center">
+                  <button class="btn btn-success mt-3">
+                    <i class="fas fa-paper-plane"></i> Submit
+                  </button>
+                </div>
+              </form>
+              {% endif %}
               {% endif %}
             </div>
+
           </div>
         </div>
       </div>

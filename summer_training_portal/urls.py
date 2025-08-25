@@ -12,7 +12,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
 
     # Student panel app (handles register, login, dashboard, etc.)
-    path("", include("studentpanel.urls")),
+      path("", include(("studentpanel.urls", "studentpanel"), namespace="studentpanel")),
 ]
 
 # Serve uploaded media files during development

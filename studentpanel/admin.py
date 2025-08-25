@@ -349,6 +349,7 @@ class CertificateSettingsAdmin(admin.ModelAdmin):
     list_display = ('training_incharge_name', 'director_name')'''
 
 
+
 # ---------- Project Incharge ----------
 @admin.register(ProjectIncharge)
 class ProjectInchargeAdmin(admin.ModelAdmin):

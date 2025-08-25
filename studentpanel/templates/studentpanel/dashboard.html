@@ -7,7 +7,7 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
   <a href="#" class="brand-link">
     <span class="brand-text font-weight-light">Student Panel</span>
-  </a>
+  </a> 
 
   <div class="sidebar">
     <nav class="mt-2">
@@ -26,17 +26,19 @@
         <li class="nav-item"><a href="#admit" class="nav-link" data-toggle="tab"><i class="nav-icon fas fa-id-card"></i>
             <p>Admit Card</p>
           </a></li>
+        <li class="nav-item">
+          <a href="#certificate" class="nav-link" data-toggle="tab">
+            <i class="nav-icon fas fa-certificate"></i>
+            <p>Certificate</p>
+          </a>
+        </li>
+
+
         <li class="nav-item"><a href="{% url 'studentpanel:logout' %}" class="nav-link"><i
               class="nav-icon fas fa-sign-out-alt"></i>
             <p>Logout</p>
           </a></li>
 
-        <li class="nav-item">
-          <a href="{% url 'studentpanel:certificate' %}" class="nav-link">
-            <i class="nav-icon fas fa-certificate"></i>
-            <p>Certificate</p>
-          </a>
-        </li>
 
       </ul>
     </nav>
@@ -229,38 +231,42 @@
                     </div>
                     <div class="card-body">
                       {% if challan and not challan.ticket_number %}
-                        <div class="alert alert-warning mb-3"><i class="fas fa-ticket-alt"></i> Please enter your ticket number to proceed.</div>
-                        <form method="POST" class="mb-3">
-                          {% csrf_token %}
-                          <div class="form-group">
-                            <label for="ticket_number"><i class="fas fa-ticket-alt"></i> Ticket Number</label>
-                            {{ ticket_form.ticket_number }}
-                          </div>
-                          <button type="submit" name="ticket_submit" class="btn btn-success"><i class="fas fa-paper-plane"></i> Submit</button>
-                        </form>
+                      <div class="alert alert-warning mb-3"><i class="fas fa-ticket-alt"></i> Please enter your ticket
+                        number to proceed.</div>
+                      <form method="POST" class="mb-3">
+                        {% csrf_token %}
+                        <div class="form-group">
+                          <label for="ticket_number"><i class="fas fa-ticket-alt"></i> Ticket Number</label>
+                          {{ ticket_form.ticket_number }}
+                        </div>
+                        <button type="submit" name="ticket_submit" class="btn btn-success"><i
+                            class="fas fa-paper-plane"></i> Submit</button>
+                      </form>
                       {% elif not profile.payment_verified %}
-                        <div class="alert alert-info"><i class="fas fa-info-circle"></i> Payment not verified. Please complete payment to proceed with batch allotment.</div>
+                      <div class="alert alert-info"><i class="fas fa-info-circle"></i> Payment not verified. Please
+                        complete payment to proceed with batch allotment.</div>
                       {% elif project_req %}
-                        <div class="card card-success card-outline">
-                          <div class="card-header">
-                            <h5 class="card-title"><i class="fas fa-check-circle text-success"></i> Project Already Selected</h5>
-                          </div>
-                          <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                              <li class="list-group-item"><strong>Project Name:</strong> {{ project.title }}</li>
-                              <li class="list-group-item"><strong>Project Code:</strong> {{ project.project_code }}</li>
-                              <li class="list-group-item"><strong>Project Incharge:</strong> {{ project.incharge }}</li>
-                              <li class="list-group-item"><strong>Duration:</strong> {{ project.batch_slot.duration_weeks }} Weeks</li>
-                              <li class="list-group-item"><strong>Dates:</strong> {{ project.batch_slot.start_date|date:"d M Y" }} to {{ project.batch_slot.end_date|date:"d M Y" }}</li>
-                            </ul>
-                          </div>
+                      <div class="card card-success card-outline">
+                        <div class="card-header">
+                          <h5 class="card-title"><i class="fas fa-check-circle text-success"></i> Project Already
+                            Selected</h5>
                         </div>
+                        <div class="card-body">
+                          <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Project Name:</strong> {{ project.title }}</li>
+                            <li class="list-group-item"><strong>Project Code:</strong> {{ project.project_code }}</li>
+                            <li class="list-group-item"><strong>Project Incharge:</strong> {{ project.incharge }}</li>
+                            <li class="list-group-item"><strong>Duration:</strong> {{ project.batch_slot.duration_weeks }} Weeks</li>
+                            <li class="list-group-item"><strong>Dates:</strong> {{ project.batch_slot.start_date|date:"d   M Y" }} to {{ project.batch_slot.end_date|date:"d M Y" }}</li>
+                          </ul>
+                        </div>
+                      </div>
                       {% else %}
-                        <div class="text-center">
-                          <a href="{% url 'studentpanel:batch_allotment' %}" class="btn btn-primary btn-lg">
-                            <i class="fas fa-magic"></i> Start Batch Allotment Wizard
-                          </a>
-                        </div>
+                      <div class="text-center">
+                        <a href="{% url 'studentpanel:batch_allotment' %}" class="btn btn-primary btn-lg">
+                          <i class="fas fa-magic"></i> Start Batch Allotment Wizard
+                        </a>
+                      </div>
                       {% endif %}
                     </div>
                   </div>
@@ -308,24 +314,37 @@
               <h4 class="card-title mb-0">Certificate</h4>
             </div>
             <div class="card-body">
-              <p class="mb-2"><i class="fas fa-info-circle mr-1"></i>Your certificate will be available for download
-                once issued and verified by admin.</p>
-              {% if certificate and certificate.certificate_pdf %}
-              <a class="btn btn-primary btn-sm font-weight-bold" target="_blank"
-                href="{{ certificate.certificate_pdf.url }}">
-                <i class="fas fa-download mr-1"></i>Download Certificate
-              </a>
+              <p class="mb-2">
+                <i class="fas fa-info-circle mr-1"></i>
+                Your certificate will be available for download once issued and verified by admin.
+              </p>
+
+              {% if cert_ready and cert_download_url %}
+              <div class="d-flex justify-content-end align-items-center flex-wrap">
+                <span class="text-muted mr-2 mb-2">Click to download your certificate</span>
+                <a class="btn btn-primary btn-sm font-weight-bold mb-2" href="{% url 'studentpanel:certificate' %}"
+                  target="_blank" rel="noopener">
+                  <i class="fas fa-external-link-alt mr-1"></i> Open Certificate
+                </a>
+
+
+              </div>
+
               {% elif certificate %}
-              <div class="alert alert-warning mb-0"><i class="fas fa-exclamation-circle mr-1"></i>Certificate is not yet
-                issued or verified.</div>
+              <div class="alert alert-warning mb-0">
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                Certificate is not yet issued or verified.
+              </div>
+
               {% else %}
-              <div class="alert alert-secondary mb-0"><i class="fas fa-info-circle mr-1"></i>Certificate will be
-                available after completion and admin verification.</div>
+              <div class="alert alert-secondary mb-0">
+                <i class="fas fa-info-circle mr-1"></i>
+                Certificate will be available after completion and admin verification.
+              </div>
               {% endif %}
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </section>
