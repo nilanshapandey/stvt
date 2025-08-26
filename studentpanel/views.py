@@ -12,7 +12,7 @@ from urllib.parse import urljoin
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-
+from django.urls import reverse
 from .forms import TicketForm, BatchSlotForm, RegistrationForm, ProjectRequestForm
 from .models import (
     StudentProfile,
@@ -202,14 +202,55 @@ def certificate(request):
     }
     return render(request, "studentpanel/certificate.html", context)
 
+@login_required
+def certificate_admin(request, cert_id):
+    # Certificate ko fetch karo by id
+    certificate = get_object_or_404(Certificate, id=cert_id)
+    profile = certificate.student
+    project_sel = ProjectSelection.objects.filter(student=profile, status="Approved").select_related("project__batch_slot", "project__incharge").first()
+    if not project_sel:
+        return HttpResponse("Project not approved or missing.", status=404)
+
+    project = project_sel.project
+    batch_slot = project.batch_slot
+    director = Director.objects.first()
+
+    base = request.build_absolute_uri("/")
+    def abs_url(path_or_none):
+        if not path_or_none:
+            return None
+        if str(path_or_none).startswith("http"):
+            return path_or_none
+        return urljoin(base, str(path_or_none).lstrip("/"))
+
+    logo_media_path = getattr(settings, "MEDIA_URL", "/media/") + "cert_assets/word/media/image1.png"
+    context = {
+        "profile": profile,
+        "project": project,
+        "incharge": project.incharge,
+        "director": director,
+        "start_date": getattr(batch_slot, "start_date", None),
+        "end_date": getattr(batch_slot, "end_date", None),
+        "today": date.today(),
+        "issue_date": getattr(batch_slot, "start_date", date.today()),
+        "certificate": certificate,
+        "logo_url": abs_url(logo_media_path),
+        "photo_url": abs_url(getattr(profile.photo, "url", None)),
+        "incharge_sig_url": abs_url(getattr(getattr(project.incharge, "signature", None), "url", None)),
+        "director_sig_url": abs_url(getattr(getattr(director, "signature", None), "url", None)),
+    }
+    return render(request, "studentpanel/certificate.html", context)
+
 
 # ───────── Admin: All Verified Certificates ─────────
+@login_required
 def view_all_certificates(request):
-    certificates = Certificate.objects.filter(is_verified=True).select_related("student")
-    return render(request, "studentpanel/certificate_all.html", {
+    certificates = Certificate.objects.all()
+    return render(request, "studentpanel/certificate_selected.html", {
         "certificates": certificates,
         "today": date.today()
     })
+
 
 
 # ───────── Batch Allotment ─────────
@@ -283,18 +324,14 @@ def fill_ticket(request):
 
 @login_required
 def download_selected_certificates(request):
-    if request.method == "POST":
-        selected_ids = request.POST.getlist("selected_ids")
+    ids = request.GET.getlist("selected_ids")
+    certificates = Certificate.objects.filter(id__in=ids)
+    return render(request, "studentpanel/certificate_selected.html", {
+        "certificates": certificates,
+        "today": date.today()
+    })
 
-        if not selected_ids:
-            messages.warning(request, "No students selected!")
-            return redirect(request.META.get("HTTP_REFERER", "/"))
 
-        certificates = Certificate.objects.filter(pk__in=selected_ids).select_related("student")
-
-        return render(request, "studentpanel/selected_certificates_print.html", {
-            "certificates": certificates
-        })
 
 # ───────────────────────── Challan View ───────────────────────
 @login_required
@@ -343,6 +380,7 @@ def admit_card(request):
 
 
 
+    director = Director.objects.first()
     context = {
         "profile": profile,
         "project": psel.project,

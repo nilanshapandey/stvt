@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -98,12 +99,13 @@
       height: 55px;
     }
   </style>
+  <link rel="shortcut icon" href="{% static 'railway.jpeg' %}" type="image/x-icon">
 </head>
 <body>
 
 <div class="certificate">
   <div class="header">
-    <img src="/media/cert_assets/logo.png" alt="logo" class="header-logo">
+    <img src="{% static 'railway.jpeg' %}" alt="logo" class="header-logo">
     SUPERVISORS TRAINING CENTRE<br>
     Northern Railway, Charbagh, Lucknow
   </div>

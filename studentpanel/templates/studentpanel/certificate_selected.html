@@ -1,0 +1,186 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All Certificates</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap & Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    /* ===== Screen (normal view) ===== */
+    body { background:#f4f6f9; }
+    .page-header{
+      background:#0d6efd; color:#fff; padding:16px 20px; margin:0 0 18px 0;
+      display:flex; justify-content:space-between; align-items:center;
+      box-shadow:0 2px 8px rgba(0,0,0,.08);
+    }
+    .wrap { max-width:1200px; margin:0 auto 60px; padding:0 12px; }
+    .cert-card{
+      background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.08);
+      overflow:hidden; margin-bottom:28px; border:1px solid #e9ecef;
+    }
+    .cert-head{
+      padding:12px 16px; background:#f8f9fa; border-bottom:1px solid #e9ecef;
+      display:flex; gap:14px; flex-wrap:wrap; align-items:center; font-weight:600;
+    }
+    .cert-meta{ color:#6c757d; font-weight:500; font-size:.95rem; }
+    .cert-body{ padding:0; }
+    .cert-iframe{
+      width:100%; height:1000px; border:0; display:block; background:#fff;
+    }
+
+    /* ===== PRINT: Only certificates, exact A4, no scrollbars ===== */
+    @media print {
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+      html, body { margin:0 !important; padding:0 !important; background:#fff !important; }
+
+      /* Hide UI / non-cert content */
+      .page-header, .btn-print, .cert-head, .alert { display:none !important; }
+
+      /* Show only the stack of certificates */
+      body > * { visibility:hidden !important; }
+      .wrap, .wrap * { visibility:visible !important; }
+
+      .wrap { max-width:100% !important; margin:0 !important; padding:0 !important; }
+
+      /* Each certificate = its own page */
+      .cert-card{
+        border:none !important; box-shadow:none !important; border-radius:0 !important;
+        margin:0 !important; padding:0 !important;
+        break-inside: avoid-page !important; page-break-inside: avoid !important;
+        break-after: page !important; page-break-after: always !important;
+      }
+      .cert-card:last-of-type{ break-after:auto !important; page-break-after:auto !important; }
+
+      .cert-body{ margin:0 auto !important; padding:0 !important; display:block; }
+
+      /* The iframe box itself is exactly A4; content will be auto-fitted by JS */
+      .cert-iframe{
+        width:210mm !important;      /* A4 width */
+        height:297mm !important;     /* A4 height */
+        border:0 !important;
+        display:block !important;
+        overflow:hidden !important;  /* hide internal scrollbars when scaled */
+        background:#fff !important;
+      }
+    }
+
+    /* A4 page without printer margins */
+    @page { size: A4 portrait; margin: 0; }
+  </style>
+    <link rel="shortcut icon" href="{% static 'railway.jpeg' %}" type="image/x-icon">
+</head>
+<body>
+
+  <div class="page-header">
+    <div>
+      <i class="fas fa-certificate me-2"></i>
+      <strong>Certificates</strong>
+    </div>
+    <button class="btn btn-light btn-sm btn-print" id="printBtn">
+      <i class="fas fa-print me-1"></i> Print / Save PDF
+    </button>
+  </div>
+
+  <div class="wrap">
+    {% if certificates %}
+      {% for cert in certificates %}
+        <div class="cert-card">
+          <div class="cert-head">
+            <span><i class="fas fa-user text-primary me-1"></i> {{ cert.student.student_name }}</span>
+            <span class="cert-meta">ID: {{ cert.student.unique_id }}</span>
+            {% if cert.serial_number %}<span class="cert-meta">Serial: {{ cert.serial_number }}</span>{% endif %}
+            {% if cert.issued_on %}<span class="cert-meta">Date: {{ cert.issued_on|date:"d-m-Y" }}</span>{% endif %}
+          </div>
+          <div class="cert-body">
+            <!-- Dynamic certificate -->
+            <iframe class="cert-iframe" src="{% url 'studentpanel:certificate_admin' cert.id %}"></iframe>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="alert alert-info">No certificates available.</div>
+    {% endif %}
+  </div>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // ===== Auto-fit each certificate iframe to A4 for PRINT (no scrollbars) =====
+    // Works if iframe is same-origin (your Django route is).
+    (function () {
+      const DPI = 96;                   // CSS pixel per inch
+      const A4_W = 8.27 * DPI;          // ≈ 794 px
+      const A4_H = 11.69 * DPI;         // ≈ 1123 px
+
+      function fitIframe(iframe) {
+        try {
+          const doc = iframe.contentDocument || iframe.contentWindow.document;
+          if (!doc) return;
+
+          // Compute natural content size inside iframe
+          const root = doc.documentElement;
+          const body = doc.body || root;
+
+          const contentW = Math.max(
+            root.scrollWidth, body.scrollWidth, root.offsetWidth, body.offsetWidth
+          );
+          const contentH = Math.max(
+            root.scrollHeight, body.scrollHeight, root.offsetHeight, body.offsetHeight
+          );
+
+          // Scale to fit A4 while preserving aspect ratio
+          const scale = Math.min(A4_W / contentW, A4_H / contentH);
+
+          // Inject/adjust styles INSIDE the iframe just for printing
+          let styleTag = doc.getElementById("__print_fit_style__");
+          if (!styleTag) {
+            styleTag = doc.createElement("style");
+            styleTag.id = "__print_fit_style__";
+            doc.head.appendChild(styleTag);
+          }
+          styleTag.textContent =
+            "@media print{html,body{margin:0!important;padding:0!important;background:#fff!important;}" +
+            "body{transform:scale(" + scale + ");transform-origin:top left;"+
+            "width:" + (A4_W/scale) + "px;height:" + (A4_H/scale) + "px;overflow:hidden!important}}" ;
+
+          // Also hide scrollbars on screen while printing approach is active
+          body.style.overflow = "hidden";
+        } catch (e) {
+          // If cross-origin or any error, gracefully ignore – outer box still A4
+          console.warn("Fit skipped:", e);
+        }
+      }
+
+      function fitAllIframes() {
+        document.querySelectorAll(".cert-iframe").forEach(fitIframe);
+      }
+
+      // Fit when each iframe loads (important)
+      document.querySelectorAll(".cert-iframe").forEach((ifr) => {
+        ifr.addEventListener("load", () => { fitIframe(ifr); });
+      });
+
+      // Fit before print (Chrome/Edge/Firefox support)
+      if (window.matchMedia) {
+        const mediaQueryList = window.matchMedia('print');
+        mediaQueryList.addEventListener('change', (mql) => {
+          if (mql.matches) fitAllIframes();
+        });
+      }
+      window.addEventListener('beforeprint', fitAllIframes);
+
+      // Print button
+      document.getElementById("printBtn")?.addEventListener("click", () => {
+        fitAllIframes();
+        window.print();
+      });
+    })();
+  </script>
+</body>
+</html>

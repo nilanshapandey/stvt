@@ -15,8 +15,12 @@ JAZZMIN_SETTINGS = {
     # Side menu icons for each app/model
     "icons": {
         "studentpanel": "fas fa-user-graduate",
-        "studentpanel.studentprofile": "fas fa-id-card",
+        "studentpanel.batchslot": "fas fa-calendar-alt",
+        "studentpanel.certificate": "fas fa-certificate",
+        "studentpanel.director": "fas fa-user-tie",
         "studentpanel.feechallan": "fas fa-file-invoice-dollar",
+        "studentpanel.projectincharge": "fas fa-user-check",
+        "studentpanel.studentprofile": "fas fa-id-card",
         "studentpanel.project": "fas fa-project-diagram",
         "studentpanel.projectselection": "fas fa-tasks",
         "studentpanel.idcard": "fas fa-address-card",
@@ -195,3 +199,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = "nilansha777@gmail.com"
 EMAIL_HOST_PASSWORD = "orezpfrqeqcopknr"
 EMAIL_USE_TLS = True
+
+
+X_FRAME_OPTIONS = "SAMEORIGIN"
