@@ -7,7 +7,7 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
   <a href="#" class="brand-link">
     <span class="brand-text font-weight-light">Student Panel</span>
-  </a> 
+  </a>
 
   <div class="sidebar">
     <nav class="mt-2">
@@ -256,8 +256,10 @@
                             <li class="list-group-item"><strong>Project Name:</strong> {{ project.title }}</li>
                             <li class="list-group-item"><strong>Project Code:</strong> {{ project.project_code }}</li>
                             <li class="list-group-item"><strong>Project Incharge:</strong> {{ project.incharge }}</li>
-                            <li class="list-group-item"><strong>Duration:</strong> {{ project.batch_slot.duration_weeks }} Weeks</li>
-                            <li class="list-group-item"><strong>Dates:</strong> {{ project.batch_slot.start_date|date:"d   M Y" }} to {{ project.batch_slot.end_date|date:"d M Y" }}</li>
+                            <li class="list-group-item"><strong>Duration:</strong> {{ project.batch_slot.duration_weeks
+                              }} Weeks</li>
+                            <li class="list-group-item"><strong>Dates:</strong> {{ project.batch_slot.start_date|date:"d
+                              M Y" }} to {{ project.batch_slot.end_date|date:"d M Y" }}</li>
                           </ul>
                         </div>
                       </div>
