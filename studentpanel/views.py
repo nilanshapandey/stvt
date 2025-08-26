@@ -12,7 +12,7 @@ from urllib.parse import urljoin
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-
+from django.urls import reverse
 from .forms import TicketForm, BatchSlotForm, RegistrationForm, ProjectRequestForm
 from .models import (
     StudentProfile,
@@ -343,6 +343,7 @@ def admit_card(request):
 
 
 
+    director = Director.objects.first()
     context = {
         "profile": profile,
         "project": psel.project,
